@@ -19,12 +19,13 @@ v 0.1.0
 ######################### Import ################
 #################################################
 
-import token
-import term
-import document
-import postingslist
-import dictionary
-
+from modules.token import *
+from modules.term import *
+from modules.document import *
+from modules.postingslist import *
+from modules.dictionary import *
+from modules.parsedoc import *
+from modules.tokenizer import *
 
 ################################################
 ##################### Classes ##################
@@ -37,7 +38,21 @@ class System(object):
     
     def __init__(self):
 
-        pass
+        # get the texts
+
+        texts_obj = Parsedoc(os.path.expanduser('testfile_amazon_rewievs'))
+        #print text_obj.docs
+
+        text_tokenized_objs = []
+
+        for doc in texts_obj.docs:
+
+            text_tokenized_objs.append(Tokenizer(doc))
+
+
+        for text_obj in text_tokenized_objs:
+
+            print text_obj.tokenized
 
 
 ###############################################
@@ -46,7 +61,7 @@ class System(object):
 
 def main():
 
-    pass
+    System1 = System()
 
 if __name__=='__main__':
 
