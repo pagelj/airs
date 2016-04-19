@@ -13,11 +13,20 @@ Summer Term 16
 
 """
 
+#from modules.parsedoc import *
+from modules.tokenizer import *
+
 class Document(object):
 
-    def __init__(self):
+ 
+    def __init__(self, content,name):
 
-        pass
+        self.length = len(content)
+        #self.date
+
+        self.tokens=Tokenizer(content)
+        self.numofwords=len(self.tokens.tokenized)
+    
 
 
 ###########################################################

@@ -27,11 +27,12 @@ from os import listdir
 ##################### Classes ##################
 ################################################
 
-class Parsedoc(object):
+class Parsedoc(File):
 
     def __init__(self, input_path):
 
-        self.docs = self._parse_doc(input_path)
+        self.content = self._parse_doc(input_path)
+        self.docid = self.filename
 
 
 
@@ -49,6 +50,8 @@ class Parsedoc(object):
 
 
         for file in files:
+
+            self.filename = file
 
             with open(os.path.join(input_path, file)) as f:
 

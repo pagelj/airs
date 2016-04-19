@@ -25,6 +25,7 @@ class Token(object):
 	# which is basically the token itself
 
         self.string = str(token)
+        self.length = len(token)
 
 
 ###########################################################

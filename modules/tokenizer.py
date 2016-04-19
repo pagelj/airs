@@ -25,15 +25,19 @@ import re
 
 class Tokenizer(object):
 
+    
     def __init__(self, text):
 
         """
         Create object for storing tokenized text
         """
 
-        self.tokenized = self.__tokenize(text)
+        self.tokenized = self._tokenize(text)
+        
+    def _tokenlist(self):
+        return self.tokenized
 
-    def __tokenize(self, text):
+    def _tokenize(self, text):
 
         """
         Simple tokenization function

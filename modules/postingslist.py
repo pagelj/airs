@@ -19,9 +19,10 @@ Summer Term 16
 
 class Postingslist(object):
 
-    def __init__(self):
+    def __init__(self, term):
 
-        pass
+        self.term = term
+        self.docids = []
 
 
 ###########################################################

@@ -24,15 +24,16 @@ from modules.term import *
 from modules.document import *
 from modules.postingslist import *
 from modules.dictionary import *
-from modules.parsedoc import *
+#from modules.parsedoc import *
 from modules.tokenizer import *
-
+import os
+import random as r
 ################################################
 ##################### Classes ##################
 ################################################
 
 
-class System(object):
+class InvertedIndex(object):
 
     # Class for managing and coordinating all the different components
     
@@ -40,28 +41,50 @@ class System(object):
 
         # get the texts
 
-        texts_obj = Parsedoc(os.path.expanduser('testfile_amazon_rewievs'))
+        
+        texts_obj,file_name = self.filereader('/home/users0/pageljs/teamlab/airs/testfile_amazon_rewievs')
         #print text_obj.docs
 
-        text_tokenized_objs = []
+        doc_obj=[]
+        for document,name in texts_obj,file_name:
+            
+            doc_obj.append(Document(document[0],name))
 
-        for doc in texts_obj.docs:
-
-            text_tokenized_objs.append(Tokenizer(doc))
-
-
-        for text_obj in text_tokenized_objs:
-
-            print text_obj.tokenized
+        print doc_obj
 
 
+    def filereader(self, directory):
+
+
+        r.seed(20)
+        # store is a list to hold the file contents    
+        store=[]
+        tempstore=[]
+        # names is a list to hold the file names       
+        names=[]
+        # The below code will traverse the given directory and store all the file names in it    
+        os.chdir(directory)
+        for dirpath, dirs, files in os.walk(directory):
+            print files[0]
+        
+        #choices will store the random N files we will use in the experiment        
+        choices=r.sample(xrange(len(files)),5)
+        
+        for x in choices:
+            with open(files[x]) as inp_data:
+                tempstore=inp_data.readlines()
+                store.append(tempstore)
+                names.append(files[x])
+        #print names
+        return store,names
+        
 ###############################################
 ################# Main ########################
 ###############################################
 
 def main():
 
-    System1 = System()
+    ii1 = InvertedIndex()
 
 if __name__=='__main__':
 
