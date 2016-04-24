@@ -36,18 +36,18 @@ import random as r
 class InvertedIndex(object):
 
     # Class for managing and coordinating all the different components
-    
+
     def __init__(self):
 
         # get the texts
 
-        
-        texts_obj,file_name = self.filereader('/home/users0/pageljs/teamlab/airs/testfile_amazon_rewievs')
+
+        texts_obj,file_name = self.filereader('/home/pagel/airs/testfile_amazon_rewievs')
         #print text_obj.docs
 
         doc_obj=[]
         for document,name in texts_obj,file_name:
-            
+
             doc_obj.append(Document(document[0],name))
 
         print doc_obj
@@ -57,19 +57,19 @@ class InvertedIndex(object):
 
 
         r.seed(20)
-        # store is a list to hold the file contents    
+        # store is a list to hold the file contents
         store=[]
         tempstore=[]
-        # names is a list to hold the file names       
+        # names is a list to hold the file names
         names=[]
-        # The below code will traverse the given directory and store all the file names in it    
+        # The below code will traverse the given directory and store all the file names in it
         os.chdir(directory)
         for dirpath, dirs, files in os.walk(directory):
             print files[0]
-        
-        #choices will store the random N files we will use in the experiment        
+
+        #choices will store the random N files we will use in the experiment
         choices=r.sample(xrange(len(files)),5)
-        
+
         for x in choices:
             with open(files[x]) as inp_data:
                 tempstore=inp_data.readlines()
@@ -77,7 +77,7 @@ class InvertedIndex(object):
                 names.append(files[x])
         #print names
         return store,names
-        
+
 ###############################################
 ################# Main ########################
 ###############################################

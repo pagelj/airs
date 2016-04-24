@@ -18,47 +18,37 @@ Summer Term 16
 ################################################
 
 import os
-from os import listdir
-
-
+import re
 
 
 ################################################
 ##################### Classes ##################
 ################################################
 
-class Parsedoc(File):
+class Parsedoc(object):
 
-    def __init__(self, input_path):
+    """
+    Parsedoc reads in one file a time and provides
+    the file content and file id
+    """
 
-        self.content = self._parse_doc(input_path)
-        self.docid = self.filename
+    def __init__(self, filename):
 
-
-
-
-
-    def _parse_doc(self, input_path):
-        
-        """Parse the document body"""
-
-        text = []
-
-        files = sorted([f for f in listdir(input_path)],
-                       key=lambda x: int(x[:-4]))
+        # Store the output of filereader as the content
+        self.content = self.filereader(filename)
+        # filename entails the whole path. On a *nix system
+        # the following regex truncates the path and returns
+        # only the filename, i.e. the docid
+        self.docid = re.sub(r'^.*\/(.*)$',r'\1',filename)
 
 
 
-        for file in files:
+    def filereader(self,filename):
 
-            self.filename = file
-
-            with open(os.path.join(input_path, file)) as f:
-
-                text.append(f.read())
-
-        return text
-
+        f = open(filename, 'r')
+        content = f.read()
+        f.close()
+        return content
 
 
 
@@ -68,8 +58,9 @@ class Parsedoc(File):
 
 def main():
 
-    ParsedocObj1 = Parsedoc(os.path.expanduser('../testfile_amazon_rewievs'))
-    print ParsedocObj1.docs
+    ParsedocObj1 = Parsedoc(os.path.relpath('../testfile_amazon_rewievs/1.txt'))
+    print ParsedocObj1.docid
+    print ParsedocObj1.content
 
 if __name__=='__main__':
 
