@@ -19,6 +19,7 @@ Summer Term 16
 
 import os
 import re
+import random as r
 
 
 ################################################
@@ -32,24 +33,36 @@ class Parsedoc(object):
     the file content and file id
     """
 
-    def __init__(self, filename):
+    def __init__(self, directory):
 
-        # Store the output of filereader as the content
-        self.content = self.filereader(filename)
-        # filename entails the whole path. On a *nix system
-        # the following regex truncates the path and returns
-        # only the filename, i.e. the docid
-        self.docid = re.sub(r'^.*\/(.*)$',r'\1',filename)
+        # Store the directory
+        self.directory = directory
+        # Store the output of filereader as the content and the docid
+        self.content, self.docid = self.filereader(self.directory)
 
+    def filereader(self, directory):
 
+        r.seed(20)
+        # store is a list to hold the file contents
+        store=[]
+        tempstore=[]
+        # names is a list to hold the file names
+        names=[]
+        # The below code will traverse the given directory and store all the file names in it
+        os.chdir(directory)
+        for dirpath, dirs, files in os.walk('.'):
+            pass
 
-    def filereader(self,filename):
+        #choices will store the random N files we will use in the experiment
+        choices=r.sample(xrange(len(files)),10)
 
-        f = open(filename, 'r')
-        content = f.read()
-        f.close()
-        return content
-
+        for x in choices:
+            with open(files[x]) as inp_data:
+                tempstore=inp_data.read()
+                store.append(tempstore)
+                names.append(files[x])
+        #print names
+        return store,names
 
 
 ###########################################################
