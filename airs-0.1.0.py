@@ -26,6 +26,7 @@ from modules.postingslist import *
 from modules.dictionary import *
 #from modules.parsedoc import *
 from modules.tokenizer import *
+from modules.query import *
 import os
 import random as r
 ################################################
@@ -42,18 +43,48 @@ class InvertedIndex(object):
         # get the texts
 
 
-        texts_obj,file_name = self.filereader('/home/pagel/airs/testfile_amazon_rewievs')
+        texts_obj,file_name = self.filereader('/home/users0/pageljs/teamlab/airs/testfile_amazon_rewievs')
         #print text_obj.docs
         doc_obj={}
-        doc_obj=zip(file_name,texts_obj)
+        doc_obj=dict(zip(file_name,texts_obj))
+        #print doc_obj
         docs={}
-        for document,name in doc_obj.items():
+        termsdict={}
 
-            docs[name]=Document(document)
+        for name,document in doc_obj.items():
             
+            doc=Document(document)
+            docs[name]=doc.tokens
+            term=Term(doc.tokens)
+            termsdict[name]=term
+            
+            #print doc.tokens
 
-        print docs
+        for element in sorted(docs):
 
+            print element,': ', docs[element],'\n'
+
+        for element in sorted(termsdict):
+
+            print element,': ', termsdict[element], '\n'
+
+        inv_index={}
+
+        for name,terms in termsdict.items():
+            for term in terms.terms:
+                
+                if term in inv_index:
+                    inv_index[term].append(name)
+                else:
+                    inv_index[term]=[name]
+                
+            
+        #inv_index = {term: index for index, term in terms.items()}
+        for element in inv_index:
+
+            print element,': ',inv_index[element],'\n'
+
+        query = Query()
 
     def filereader(self, directory):
 
@@ -67,14 +98,14 @@ class InvertedIndex(object):
         # The below code will traverse the given directory and store all the file names in it
         os.chdir(directory)
         for dirpath, dirs, files in os.walk(directory):
-            print files[0]
+            pass
 
         #choices will store the random N files we will use in the experiment
-        choices=r.sample(xrange(len(files)),5)
+        choices=r.sample(xrange(len(files)),10)
 
         for x in choices:
             with open(files[x]) as inp_data:
-                tempstore=inp_data.readlines()
+                tempstore=inp_data.read()
                 store.append(tempstore)
                 names.append(files[x])
         #print names

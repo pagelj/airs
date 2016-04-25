@@ -33,6 +33,10 @@ class Tokenizer(object):
         """
 
         self.tokenized = self._tokenize(text)
+
+    def __str__(self):
+
+        return str(self.tokenized)
         
     def _tokenlist(self):
         return self.tokenized

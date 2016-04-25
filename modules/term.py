@@ -12,18 +12,36 @@ Summer Term 16
 04/11/2016
 
 """
-
+import re
 ################################################
 ##################### Classes ##################
 ################################################
 
-#class Term(Token):
+special_char = r"""[!,."']"""
 
-#    def __init__(self):
+class Term(object):
 
-#        pass
+    def __init__(self,tokens):
+        self.tokens=tokens.tokenized
+        self.terms=self.terminator(self.tokens)
+        
+
+    def __str__(self):
+
+        return str(self.terms)
 
 
+    def terminator(self,tokens):
+        terms = set([x.lower() for x in tokens])
+        newterms=[]
+        for term in terms:
+            if re.match(special_char,term):
+                continue
+            else:
+                newterms.append(term)
+
+        return newterms
+    
 ###########################################################
 ####################### Testing ###########################
 ###########################################################
