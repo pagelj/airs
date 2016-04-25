@@ -19,16 +19,14 @@ from modules.tokenizer import *
 class Document(object):
 
  
-    def __init__(self, content,name):
+    def __init__(self, content):
 
         self.length = len(content)
         #self.date
 
         self.tokens=Tokenizer(content)
         self.numofwords=len(self.tokens.tokenized)
-
-        print self.name
-        print self.content
+        return self.tokens
 
 
 ###########################################################
