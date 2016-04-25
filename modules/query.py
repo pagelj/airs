@@ -3,7 +3,7 @@
 # coding=utf-8
 
 """
-Awesome Information Retrieval System (AIRS) - Document
+Awesome Information Retrieval System (AIRS) - Query
 
 Contributors: Prajit Dhar, Janis Pagel
 University of Stuttgart
@@ -13,26 +13,24 @@ Summer Term 16
 
 """
 
-#from modules.parsedoc import *
-from modules.tokenizer import *
-
-class Document(object):
-
- 
-    def __init__(self, content):
-
-        #print content
-
-        self.length = len(content)
-        #self.date
-
-        self.tokens=Tokenizer(content)
-        self.numofwords=len(self.tokens.tokenized)
-        #return self.tokens
+import re
 
 
-    
+pattern = r'[&| ]'
 
+class Query(object):
+
+    def __init__(self):
+
+        self.userinput = raw_input('Please enter your query.')
+
+
+    def process_query(self):
+
+        if re.search(pattern, self.userinput):
+
+            self.query = re.split(pattern, self.userinput)
+        
 ###########################################################
 ####################### Testing ###########################
 ###########################################################
