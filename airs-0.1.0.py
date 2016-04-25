@@ -45,7 +45,7 @@ class InvertedIndex(object):
         texts_obj,file_name = self.filereader('/home/pagel/airs/testfile_amazon_rewievs')
         #print text_obj.docs
 
-        doc_obj=[]
+        doc_obj[file_name]=text_obj
         for document,name in texts_obj,file_name:
 
             doc_obj.append(Document(document[0],name))
