@@ -46,11 +46,13 @@ class InvertedIndex(object):
         #print text_obj.docs
         doc_obj={}
         doc_obj=zip(file_name,texts_obj)
+        docs={}
         for document,name in doc_obj.items():
 
-            doc_obj.append(Document(document,name))
+            docs[name]=Document(document)
+            
 
-        print doc_obj
+        print docs
 
 
     def filereader(self, directory):
