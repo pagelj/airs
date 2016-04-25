@@ -11,7 +11,7 @@ Institute for Natural Language Processing
 Summer Term 16
 04/11/2016
 
-v 0.1.0
+v 0.2.0
 
 """
 
