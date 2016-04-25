@@ -26,7 +26,9 @@ class Document(object):
 
         self.tokens=Tokenizer(content)
         self.numofwords=len(self.tokens.tokenized)
-    
+
+        print self.name
+        print self.content
 
 
 ###########################################################
