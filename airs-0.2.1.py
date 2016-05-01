@@ -70,12 +70,16 @@ class InvertedIndex(object):
         inv_index={}
 
         for name,terms in termsdict.items():
+
             for term in terms.terms:
 
                 if term in inv_index:
-                    inv_index[term].append(name)
+
+                    inv_index[term]._update_postingslist(name)
+
                 else:
-                    inv_index[term]=[name]
+
+                    inv_index[term]=Postingslist(term,name)
 
 
         #inv_index = {term: index for index, term in terms.items()}
