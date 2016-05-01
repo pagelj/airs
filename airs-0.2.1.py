@@ -23,7 +23,6 @@ from modules.token import *
 from modules.term import *
 from modules.document import *
 from modules.postingslist import *
-from modules.dictionary import *
 from modules.parsedoc import *
 from modules.tokenizer import *
 from modules.query import *
