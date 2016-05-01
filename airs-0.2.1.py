@@ -27,6 +27,7 @@ from modules.parsedoc import *
 from modules.tokenizer import *
 from modules.query import *
 import os
+import re
 
 ################################################
 ##################### Classes ##################
@@ -43,51 +44,41 @@ class InvertedIndex(object):
 
         parsedoc_obj = Parsedoc(os.path.expanduser('./testfile_amazon_rewievs'))
         texts_obj,file_name = parsedoc_obj.content,parsedoc_obj.docid
-        #print text_obj.docs
-        doc_obj={}
-        doc_obj=dict(zip(file_name,texts_obj))
-        #print doc_obj
-        docs={}
-        termsdict={}
 
-        for name,document in doc_obj.items():
+        self.doc_obj={}
+        self.doc_obj=dict(zip(file_name,texts_obj))
+        self._create_terms()
+        self._create_inv_index()
+
+    def _create_terms(self):
+
+        self.docs={}
+        self.termsdict={}
+
+        for name,document in self.doc_obj.items():
 
             doc=Document(document)
-            docs[name]=doc.tokens
+            self.docs[name]=doc.tokens
             term=Term(doc.tokens)
-            termsdict[name]=term
+            self.termsdict[name]=term
 
-            #print doc.tokens
+    def _create_inv_index(self):
 
-        for element in sorted(docs):
+        self.inv_index={}
 
-            print element,': ', docs[element],'\n'
-
-        for element in sorted(termsdict):
-
-            print element,': ', termsdict[element], '\n'
-
-        inv_index={}
-
-        for name,terms in termsdict.items():
+        for name,terms in self.termsdict.items():
 
             for term in terms.terms:
 
-                if term in inv_index:
+                if term in self.inv_index:
 
-                    inv_index[term]._update_postingslist(name)
+                    self.inv_index[term]._update_postingslist(name)
 
                 else:
 
-                    inv_index[term]=Postingslist(term,name)
+                    self.inv_index[term]=Postingslist(term,name)
 
-
-        #inv_index = {term: index for index, term in terms.items()}
-        for element in inv_index:
-
-            print element,': ',inv_index[element],'\n'
-
-        query = Query()
+        #self.query = Query()
 
 ###############################################
 ################# Main ########################
@@ -96,6 +87,18 @@ class InvertedIndex(object):
 def main():
 
     ii1 = InvertedIndex()
+
+    for element in sorted(ii1.docs):
+
+        print element,': ', ii1.docs[element],'\n'
+
+    for element in sorted(ii1.termsdict):
+
+        print element,': ', ii1.termsdict[element], '\n'
+
+    for element in sorted(ii1.inv_index):
+
+        print ii1.inv_index[element],'\n'
 
 if __name__=='__main__':
 

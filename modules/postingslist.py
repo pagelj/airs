@@ -13,9 +13,19 @@ Summer Term 16
 
 """
 
+import re
+
 ################################################
 ##################### Classes ##################
 ################################################
+
+def natural_sortkey(string):
+
+    # Function for sorting integer parts of
+    # a string
+
+    tokenize = re.compile(r'(\d+)|(\D+)').findall
+    return tuple(int(num) if num else alpha for num, alpha in tokenize(string))
 
 class Postingslist(object):
 
@@ -35,7 +45,7 @@ class Postingslist(object):
         for term_id in self.postingslist:
 
             self.postingslist[term_id].append(doc_id)
-
+            self.postingslist[term_id] = sorted(self.postingslist[term_id], key=natural_sortkey)
 
 ###########################################################
 ####################### Testing ###########################
