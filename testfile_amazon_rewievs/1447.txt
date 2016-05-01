@@ -1,0 +1,2 @@
+Bad Watch
+its doesnt keep correct time, Looks good, but it loses or gains about 20 mins of time, every other day or so .

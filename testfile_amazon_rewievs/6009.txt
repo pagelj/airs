@@ -1,0 +1,2 @@
+Equipment not functional with MAC book pro
+When we tried to use this device, but it caused the Mac book to freeze up.  Cannot tell if this failure was a result of the lighting port or device.
