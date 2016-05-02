@@ -54,10 +54,17 @@ class InvertedIndex(object):
 
         postingslists = query.return_postingslist(query.query, self.inv_index)
         intersection = query.logical_and(postingslists)
-        print '\nYour queried words occur in the following documents:'
-        print
-        for doc_id in intersection:
-            print doc_id
+
+        if intersection == None:
+
+            print '\nYour query could not be found in the colection.'
+
+        else:
+
+            print '\nYour queried word(s) occur in the following document(s):'
+            print
+            for doc_id in intersection:
+                print doc_id
 
 
     def _create_terms(self):
@@ -111,10 +118,13 @@ def main():
 
         print element,': ', ii1.termsdict[element], '\n'
 
+    """
+
     for element in sorted(ii1.inv_index):
 
         print ii1.inv_index[element],'\n'
 
+    """
     print ii1.terms
     allterms=[term for midlist in ii1.terms for term in midlist]
     print allterms

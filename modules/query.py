@@ -50,20 +50,31 @@ class Query(object):
 
     def logical_and(self, postingslists):
 
-        postingslist1=postingslists.pop(0)
-        print postingslist1
-        postingslist2=postingslists.pop(0)
-        print postingslist2
+        # intersect all postingslists of the entered query words
 
-        intersection = set(postingslist1).intersection(set(postingslist2))
+        if len(postingslists) == 0:
 
-        while postingslists != []:
+            return None
 
-            postingslist3=postingslists.pop(0)
+        elif len(postingslists) == 1:
+
+            return postingslists[0]
+
+        else:
+
+            postingslist1=postingslists.pop(0)
+
+            postingslist2=postingslists.pop(0)
 
             intersection = set(postingslist1).intersection(set(postingslist2))
 
-        return sorted(list(set(postingslist1).intersection(set(postingslist2))), key=natural_sortkey)
+            while postingslists != []:
+
+                postingslist3=postingslists.pop(0)
+
+                intersection = set(postingslist3).intersection(set(intersection))
+
+            return sorted(list(intersection), key=natural_sortkey)
 
 ###########################################################
 ####################### Testing ###########################

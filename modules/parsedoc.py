@@ -54,7 +54,7 @@ class Parsedoc(object):
             pass
 
         #choices will store the random N files we will use in the experiment
-        choices=r.sample(xrange(len(files)),100)
+        choices=r.sample(xrange(len(files)),10)
 
         for x in choices:
             with open(files[x]) as inp_data:
