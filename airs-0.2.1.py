@@ -27,7 +27,7 @@ from modules.parsedoc import *
 from modules.tokenizer import *
 from modules.query import *
 import os
-import re
+import re,itertools
 
 ################################################
 ##################### Classes ##################
@@ -50,6 +50,16 @@ class InvertedIndex(object):
         self._create_terms()
         self._create_inv_index()
 
+        query = Query()
+
+        postingslists = query.return_postingslist(query.query, self.inv_index)
+        intersection = query.logical_and(postingslists)
+        print '\nYour queried words occur in the following documents:'
+        print
+        for doc_id in intersection:
+            print doc_id
+
+
     def _create_terms(self):
 
         self.docs={}
@@ -61,6 +71,8 @@ class InvertedIndex(object):
             self.docs[name]=doc.tokens
             term=Term(doc.tokens)
             self.termsdict[name]=term
+
+        self.terms = self.termsdict.values()
 
     def _create_inv_index(self):
 
@@ -78,7 +90,10 @@ class InvertedIndex(object):
 
                     self.inv_index[term]=Postingslist(term,name)
 
-        #self.query = Query()
+
+    # create terms on hard disk
+
+    #FolderCreater([''])
 
 ###############################################
 ################# Main ########################
@@ -87,7 +102,7 @@ class InvertedIndex(object):
 def main():
 
     ii1 = InvertedIndex()
-
+    """
     for element in sorted(ii1.docs):
 
         print element,': ', ii1.docs[element],'\n'
@@ -99,6 +114,11 @@ def main():
     for element in sorted(ii1.inv_index):
 
         print ii1.inv_index[element],'\n'
+
+    print ii1.terms
+    allterms=[term for midlist in ii1.terms for term in midlist]
+    print allterms
+    """
 
 if __name__=='__main__':
 

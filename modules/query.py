@@ -15,22 +15,56 @@ Summer Term 16
 
 import re
 
+def natural_sortkey(string):
 
-pattern = r'[&| ]'
+    # Function for sorting integer parts of
+    # a string
+
+    tokenize = re.compile(r'(\d+)|(\D+)').findall
+    return tuple(int(num) if num else alpha for num, alpha in tokenize(string))
+
+pattern = r'[& ]'
 
 class Query(object):
 
     def __init__(self):
 
-        self.userinput = raw_input('Please enter your query.')
-
+        self.userinput = str(raw_input('Please enter your query.\n\n'))
+        self.query = self.process_query()
 
     def process_query(self):
 
-        if re.search(pattern, self.userinput):
+        return re.split(pattern,self.userinput)
 
-            self.query = re.split(pattern, self.userinput)
-        
+    def return_postingslist(self, query, terms):
+
+        postingslists = []
+
+        for word in query:
+
+            if word in terms:
+
+                postingslists.append(terms[word].postingslist.values()[0])
+
+        return postingslists
+
+    def logical_and(self, postingslists):
+
+        postingslist1=postingslists.pop(0)
+        print postingslist1
+        postingslist2=postingslists.pop(0)
+        print postingslist2
+
+        intersection = set(postingslist1).intersection(set(postingslist2))
+
+        while postingslists != []:
+
+            postingslist3=postingslists.pop(0)
+
+            intersection = set(postingslist1).intersection(set(postingslist2))
+
+        return sorted(list(set(postingslist1).intersection(set(postingslist2))), key=natural_sortkey)
+
 ###########################################################
 ####################### Testing ###########################
 ###########################################################
