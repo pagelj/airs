@@ -1,5 +1,5 @@
 from term import *
-import panda as pd
+import pandas as pd
 
 class Ranking(object):
 
