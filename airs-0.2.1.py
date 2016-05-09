@@ -26,6 +26,7 @@ from modules.postingslist import *
 from modules.parsedoc import *
 from modules.tokenizer import *
 from modules.query import *
+from modules.ranking import *
 import os
 import re,itertools
 
@@ -65,6 +66,9 @@ class InvertedIndex(object):
             print
             for doc_id in intersection:
                 print doc_id
+                
+        ranking=Ranking(self.terms,intersection)
+        
 
 
     def _create_terms(self):
