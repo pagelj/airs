@@ -14,6 +14,10 @@ Summer Term 16
 """
 import re
 import os
+import math
+from parsedoc import *
+from document import *
+from tokenizer import *
 
 fileloc="/tmp"
 slash="/"
@@ -57,8 +61,9 @@ class Term(object):
 
     def __init__(self,tokens):
 
-        self.tokens=tokens.tokenized
-        self.terms=self.terminator(self.tokens)
+        self.tokens = tokens.tokenized
+        self.terms = self.terminator(self.tokens)
+        self.tf = self.compute_tf(self.tokens,self.terms)
 
 
     def __str__(self):
@@ -69,7 +74,7 @@ class Term(object):
     def terminator(self,tokens):
 
         terms = set([x.lower() for x in tokens])
-        newterms=[]
+        newterms = []
 
         for term in terms:
 
@@ -78,9 +83,34 @@ class Term(object):
                 continue
 
             else:
+                
                 newterms.append(term)
 
         return newterms
+
+    def compute_tf(self, tokens, terms):
+
+        tf_values = {}
+
+        for term in terms:
+
+            for token in tokens:
+
+                if term == token:
+
+                    if term in tf_values:
+
+                        tf_values[term] += 1
+
+                    else:
+
+                        tf_values[term] = 1
+
+        for term in tf_values:
+
+            tf_values[term] = 1 + math.log10(tf_values[term])
+        
+        return tf_values
 
 ###########################################################
 ####################### Testing ###########################
@@ -88,8 +118,31 @@ class Term(object):
 
 def main():
 
-    pass
+    parsedoc_obj = Parsedoc(os.path.expanduser('./testfile_amazon_rewievs'))
+    texts_obj,file_name = parsedoc_obj.content,parsedoc_obj.docid
 
+    doc_obj={}
+    doc_obj=dict(zip(file_name,texts_obj))
+
+    docs={}
+    termsdict={}
+    
+    for name,document in doc_obj.items():
+
+        doc=Document(document)
+        docs[name]=doc.tokens
+        term=Term(doc.tokens)
+        termsdict[name]=term
+
+    terms = termsdict.values()
+    
+    
+    for term in terms:
+
+        print term.tokens
+        print term.terms
+        print term.tf
+        
 if __name__=='__main__':
 
     main()

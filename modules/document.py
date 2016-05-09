@@ -14,7 +14,7 @@ Summer Term 16
 """
 
 #from modules.parsedoc import *
-from modules.tokenizer import *
+from tokenizer import *
 
 class Document(object):
 
