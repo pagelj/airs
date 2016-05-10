@@ -58,7 +58,7 @@ def filereader(directory):
     for dirpath, dirs, files in os.walk(directory):
         print files[0]
 #choices will store the random N files we will use in the experiment        
-    choices=r.sample(xrange(len(files)),8)
+    choices=r.sample(xrange(len(files)),len(files))
     for x in choices:
         with open(files[x]) as inp_data:
             tempstore=inp_data.readlines()
@@ -147,6 +147,7 @@ def idfreq(term, content):
         temp=content.get(ele)
         if term in temp:
             num = num + 1
+    print num,len(content)
     if num > 0:
         return 0.0 + math.log(float(len(content)) / num)
     else:
@@ -252,22 +253,22 @@ def CosineSimilarity(directory):
     for i in xrange(len(names)):
         counts[names[i]],allwords[names[i]]=normalizer(content[i]) 
 
-#    print counts
+    print counts
     for i in xrange(len(names)):
         termfreqeuncy[names[i]]=termfreq(counts[names[i]])
-#    print termfreqeuncy
+    print termfreqeuncy
     
     allcount=allnormalizer(content)
     allterms=list(allcount)
     for term in allterms:
        idfrequency[term]=idfreq(term,allwords)
-#    print idfrequency
+    print 'IDF' ,idfrequency
     tf=pd.DataFrame(termfreqeuncy,columns=names,index=allterms)
     tf=tf.fillna(0)
-#    print tf
+    print tf
     idf1=pd.Series(idfrequency,index=allterms)
     idf=pd.DataFrame(idf1)
- #   print idf
+    print 'IDF2',idf
     tfidf=pd.DataFrame(tf.values*idf.values,columns=tf.columns,index=idf.index)
     tfidf=tfidf.transpose()
     matr=cosinelooper(tfidf)

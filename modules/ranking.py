@@ -4,7 +4,7 @@ import pandas as pd
 class Ranking(object):
 
     def __init__(self,terms,querypostlist):
-        self.terms=terms.terms
+        self.terms=terms
         self.querypostlist=querypostlist
         
     
