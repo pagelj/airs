@@ -11,7 +11,7 @@ Institute for Natural Language Processing
 Summer Term 16
 04/11/2016
 
-v 0.2.1
+v 0.3.0
 
 """
 
@@ -43,7 +43,7 @@ class InvertedIndex(object):
 
         # get the texts
 
-        parsedoc_obj = Parsedoc(os.path.expanduser('./testfile_amazon_rewievs'))
+        parsedoc_obj = Parsedoc(os.path.expanduser('./amazon_reviews'))
         texts_obj,file_name = parsedoc_obj.content,parsedoc_obj.docid
 
         self.doc_obj={}
@@ -66,9 +66,9 @@ class InvertedIndex(object):
             print
             for doc_id in intersection:
                 print doc_id
-                
+
         ranking=Ranking(self.terms,intersection)
-        
+
 
 
     def _create_terms(self):
