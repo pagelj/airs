@@ -91,7 +91,7 @@ class Tokenizer(object):
         # define punctuations
         punctuation = r'[^a-zA-Z\d\s]'
         # define set of "not-to-separate" english clitics
-        en_clitics = r"(?:'t|'ll|'s|'d|'re)"
+        en_clitics = r"(?:'t|'ll|'s|'d|'re|'m|'nt)"
 
         # split the text at whitespaces
         text = text.split()

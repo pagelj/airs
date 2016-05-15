@@ -82,11 +82,37 @@ class Term(object):
 
                 continue
 
+            # lemmatize clitics
+
+            elif term == 'an':
+
+                newterms.append('a')
+
+            elif term == "'m":
+
+                newterms.append('am')
+
+            elif term == "'re":
+
+                newterms.append('are')
+
+            elif term == "'d":
+
+                newterms.append('would')
+
+            elif term == "'ll":
+
+                newterms.append('will')
+
+            elif term == "'t" or term == "'nt":
+
+                newterms.append('not')
+
             else:
-                
+
                 newterms.append(term)
 
-        return newterms
+        return set(newterms)
 
     def compute_tf(self, tokens, terms):
 
@@ -109,7 +135,7 @@ class Term(object):
         for term in tf_values:
 
             tf_values[term] = 1 + math.log10(tf_values[term])
-        
+
         return tf_values
 
 ###########################################################
@@ -126,7 +152,7 @@ def main():
 
     docs={}
     termsdict={}
-    
+
     for name,document in doc_obj.items():
 
         doc=Document(document)
@@ -135,14 +161,14 @@ def main():
         termsdict[name]=term
 
     terms = termsdict.values()
-    
-    
+
+
     for term in terms:
 
         print term.tokens
         print term.terms
         print term.tf
-        
+
 if __name__=='__main__':
 
     main()
