@@ -19,6 +19,9 @@ Summer Term 16
 
 import re
 
+from parsedoc import *
+from document import *
+
 ################################################
 ##################### Classes ##################
 ################################################
@@ -32,8 +35,8 @@ class Tokenizer(object):
         Create object for storing tokenized text
         """
         self.text = text
-        self.tokenized = self._simple_tokenize(self.text)
-        #self.tokenized = self._complex_tokenize(self.text)
+        #self.tokenized = self._simple_tokenize(self.text)
+        self.tokenized = self._complex_tokenize(self.text)
 
     def __str__(self):
 
@@ -88,7 +91,7 @@ class Tokenizer(object):
         # define punctuations
         punctuation = r'[^a-zA-Z\d\s]'
         # define set of "not-to-separate" english clitics
-        en_special_cases = r"(?:'t|'ll|'s|'d)"
+        en_clitics = r"(?:'t|'ll|'s|'d|'re)"
 
         # split the text at whitespaces
         text = text.split()
@@ -109,39 +112,49 @@ class Tokenizer(object):
 
             # handling of clitics in English
 
-            if re.search(en_special_cases, text[token_id]):
+            if re.search(en_clitics, token):
 
-                token = re.sub(r'(.*)' + '(' + en_special_cases + ')', r' \1 \2 ', text[token_id])
+                token = re.sub(r'(.*)' + '(' + en_clitics + ')', r' \1 \2 ', token)
                 text_new.extend(token.split())
 
-            elif re.search(r'[.]', text[token_id]):
+            elif re.search(r'[.]$', token):
 
                 # if the next token begins with a small letter,
                 # keep the token as an abbrevation
 
                 try:
+
                     if text[token_id+1][0].islower():
 
                         text_new.append(token)
 
                     else:
 
-                        token = re.sub(r'([.])', r' \1 ', text[token_id])
-                        text_new.extend(token.split())
+                        token = re.sub(r'([.])', r' \1 ', token)
+
+                        # split other punctuations
+                        if re.search(punctuation, token):
+
+                            token = re.sub(r'(' + punctuation + ')', r' \1 ', token)
+                            text_new.extend(token.split())
+
+                        else:
+
+                            text_new.append(token)
 
                 # If the token with a dot is the last token
                 # separate the dot.
                 except IndexError:
 
-                    token = re.sub(r'([.])', r' \1 ', text[token_id])
+                    token = re.sub(r'([.])', r' \1 ', token)
                     text_new.extend(token.split())
 
-            # if a punctuation occurs in the token
-            # separate it
+            # if a punctuation occurs at the beginning
+            # or the end of the token, separate it
 
-            elif re.search(punctuation, text[token_id]):
+            elif re.search(punctuation, token):
 
-                token = re.sub(r'(' + punctuation + ')', r' \1 ', text[token_id])
+                token = re.sub(r'(' + punctuation + ')', r' \1 ', token)
                 text_new.extend(token.split())
 
             else:
@@ -159,8 +172,20 @@ def main():
 
     Tokenizer1 = Tokenizer("""This is a test sentence. This is another sentence!!! "Why is it so?"
                             He'll never know. That's a shame. He won't ever do it. I can't tell.
-                            Keep dot when it is an abbr. and the following token is lowercased.""")
+                            Keep dot when it is an abbr. and the following token is lowercased. !Hyphen-Test. -Test test-test""")
     print Tokenizer1.tokenized
+
+    parsedoc_obj = Parsedoc(os.path.expanduser('../amazon_reviews'))
+    texts_obj,file_name = parsedoc_obj.content,parsedoc_obj.docid
+
+    doc_obj={}
+    doc_obj=dict(zip(file_name,texts_obj))
+
+    for name,document in doc_obj.items():
+
+        doc=Document(document)
+        print doc.tokens
+
 
 if __name__=='__main__':
 

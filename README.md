@@ -19,7 +19,7 @@ Create a fully functional Information Retrieval System, including Indexing, Quer
 Start the system by typing
 
 ```sh
-python airs-0.2.1.py
+python airs-0.3.0.py
 ```
 
 You are asked to enter your query. The output is a list of all documents, the query words occur in.
@@ -34,7 +34,7 @@ The used data base is a collection of 10,000 Amazon reviews, stored in /testfile
 
 ## Classes
 
-### airs-0.2.1.py
+### airs-0.3.0.py
 
 Main class, running the system and combine the different modules of the code.
 
