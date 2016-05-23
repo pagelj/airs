@@ -28,7 +28,9 @@ from modules.tokenizer import *
 from modules.query import *
 from modules.ranking import *
 import os
-import re,itertools
+import re
+import itertools
+import cPickle as pickle
 
 ################################################
 ##################### Classes ##################
@@ -49,16 +51,21 @@ class InvertedIndex(object):
         self.doc_obj={}
         self.doc_obj=dict(zip(file_name,texts_obj))
         self._create_terms()
-        self._create_inv_index()
+        #self._create_inv_index()
+
+
+        with open('../inverted_index.pkl','rb') as fp:
+
+             self.inv_index = pickle.load(fp)
 
         query = Query()
 
         postingslists = query.return_postingslist(query.query, self.inv_index)
         intersection = query.logical_and(postingslists)
 
-        if intersection == None:
+        if intersection == []:
 
-            print '\nYour query could not be found in the colection.'
+            print '\nYour query could not be found in the collection.'
 
         else:
 
@@ -96,10 +103,19 @@ class InvertedIndex(object):
                 if term in self.inv_index:
 
                     self.inv_index[term]._update_postingslist(name)
+                    #print (term,self.inv_index[term])
 
                 else:
 
                     self.inv_index[term]=Postingslist(term,name)
+                    #print (term,self.inv_index[term])
+
+        filename='inverted_index'
+        path='../'
+
+        with open(path.strip()+filename.strip()+'.pkl','wb') as fp:
+
+            pickle.dump(self.inv_index, fp)
 
 
     # create terms on hard disk
@@ -124,9 +140,9 @@ def main():
 
     """
 
-    for element in sorted(ii1.inv_index):
+    #for element in sorted(ii1.inv_index):
 
-        print ii1.inv_index[element],'\n'
+    #    print ii1.inv_index[element],'\n'
 
     """
     print ii1.terms
