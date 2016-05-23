@@ -30,7 +30,7 @@ For testing purposes, only 10 randomly chosen documents are taken into account.
 
 ## Data
 
-The used data base is a collection of 10,000 Amazon reviews, stored in /testfile_amazon_rewievs
+The used data base is a collection of 10,000 Amazon reviews, stored in /amazon_reviews
 
 ## Classes
 
@@ -66,6 +66,11 @@ Class for storing the postings lists for each term.
 ### modules/query.py
 
 Class for performing user queries and performing query processing and parsing
+
+### modules/ranking.py
+
+Class for ranking, at the moment based on cosine similarity. The class provides
+a sorted list of output documents for a query, based on the cosine ranking. 
 
 ### Not listed Classes
 
