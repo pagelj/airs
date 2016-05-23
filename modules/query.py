@@ -46,6 +46,10 @@ class Query(object):
 
                 postingslists.append(terms[word].postingslist.values()[0])
 
+            else:
+
+                postingslists.append([])
+
         return postingslists
 
     def logical_and(self, postingslists):
