@@ -51,13 +51,13 @@ class InvertedIndex(object):
         self.doc_obj={}
         self.doc_obj=dict(zip(file_name,texts_obj))
         self._create_terms()
-        #self._create_inv_index()
+        self._create_inv_index()
 
-
+        """
         with open('../inverted_index.pkl','rb') as fp:
 
              self.inv_index = pickle.load(fp)
-
+        """
         query = Query()
 
         postingslists = query.return_postingslist(query.query, self.inv_index)
@@ -74,7 +74,7 @@ class InvertedIndex(object):
             for doc_id in intersection:
                 print doc_id
 
-        ranking=Ranking(self.terms,intersection)
+        #ranking=Ranking(self.terms,intersection)
 
 
 
