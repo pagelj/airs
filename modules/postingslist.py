@@ -33,8 +33,8 @@ class Postingslist(object):
 
         self.term_id = term_id
         self.docid = doc_id
-        self.postingslist = {term_id: [doc_id]}
-        self.postingslist_len = len(self.postingslist[self.term_id])
+        self.postingslist = [self.docid]
+        self.postingslist_len = len(self.postingslist)
 
     def __str__(self):
 
@@ -42,12 +42,10 @@ class Postingslist(object):
 
     def _update_postingslist(self, doc_id):
 
-        for term_id in self.postingslist:
+        self.postingslist.append(doc_id)
+        self.postingslist = sorted(self.postingslist, key=natural_sortkey)
 
-            self.postingslist[term_id].append(doc_id)
-            self.postingslist[term_id] = sorted(self.postingslist[term_id], key=natural_sortkey)
-
-        self.postingslist_len = len(self.postingslist[self.term_id])
+        self.postingslist_len = len(self.postingslist)
 
 ###########################################################
 ####################### Testing ###########################
