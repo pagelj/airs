@@ -76,8 +76,6 @@ class InvertedIndex(object):
 
             self._create_inv_index()
 
-
-
         query = Query()
 
         postingslists = query.return_postingslist(query.query, self.inv_index)
@@ -94,7 +92,7 @@ class InvertedIndex(object):
             for doc_id in intersection:
                 print doc_id
 
-        ranking=Ranking(self.terms,intersection)
+        #ranking=Ranking(self.terms,intersection)
 
 
 

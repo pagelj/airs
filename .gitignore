@@ -1,11 +1,18 @@
 ### Python
 *.pyc
 
+
+### python pickle files
+
+*.pkl
+*/*.pkl
+
 ### Unix
 .*
 
 ### Emacs
 *~
+*/\#*\#
 \#*\#
 
 ### Nano
