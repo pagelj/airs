@@ -1,5 +1,39 @@
+### Python
 *.pyc
+
+### Unix
 .*
+
+### Emacs
 *~
-#*#
+\#*\#
+
+### Nano
 nano.save
+
+### Latex
+*.aux
+*.lof
+*.log
+*.lot
+*.fls
+*.out
+*.toc
+*.fmt
+*.fot
+*.cb
+*.cb2
+*.dvi
+*-converted-to.*
+*.bbl
+*.bcf
+*.blg
+*-blx.aux
+*-blx.bib
+*.brf
+*.run.xml
+*.thm
+*.nav
+*.snm
+*.vrb
+*.brf

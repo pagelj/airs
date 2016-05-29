@@ -28,6 +28,30 @@ By now only boolean query is implemented, i.e. only documents in which all enter
 
 For testing purposes, only 10 randomly chosen documents are taken into account.
 
+## Options
+
+You may specify several flags to individualize your indexing:
+
+```sh
+python airs-0.3.0.py [-c PATH] [-r N] [-s] [-p]
+```
+
+### -c
+
+specify a path for corpus files. Default is ./amazon_reviews
+
+### -r
+
+specify number of randomized documents used for the inverted index. Default is 100 files. If all documents should be considered, type -r all
+
+### -s
+
+activate this flag if you want to store the inverted index into a pickle file
+
+### -p
+
+activate this flag if you wish to read the inverted index from a stored pickle file
+
 ## Data
 
 The used data base is a collection of 10,000 Amazon reviews, stored in /amazon_reviews
@@ -70,7 +94,7 @@ Class for performing user queries and performing query processing and parsing
 ### modules/ranking.py
 
 Class for ranking, at the moment based on cosine similarity. The class provides
-a sorted list of output documents for a query, based on the cosine ranking. 
+a sorted list of output documents for a query, based on the cosine ranking.
 
 ### Not listed Classes
 
