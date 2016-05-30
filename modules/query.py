@@ -14,6 +14,8 @@ Summer Term 16
 """
 
 import re
+from postingslist import *
+
 
 def natural_sortkey(string):
 
@@ -44,11 +46,13 @@ class Query(object):
 
             if word in terms:
 
-                postingslists.append(terms[word].postingslist.values()[0])
+                postingslists.append(terms[word])
 
             else:
 
-                postingslists.append([])
+                empty_postingslist = Postingslist('')
+
+                postingslists.append(empty_postingslist)
 
         return postingslists
 
@@ -58,11 +62,16 @@ class Query(object):
 
         if len(postingslists) == 0:
 
-            return None
+            intersection = Postingslist('')
+
+            return intersection
 
         elif len(postingslists) == 1:
 
-            return postingslists[0]
+            intersection = Postingslist('')
+            intersection._update_postingslist(postingslists[0].postingslist)
+
+            return intersection
 
         else:
 
@@ -70,15 +79,19 @@ class Query(object):
 
             postingslist2=postingslists.pop(0)
 
-            intersection = set(postingslist1).intersection(set(postingslist2))
+            intersection = set(postingslist1.postingslist).intersection(set(postingslist2.postingslist))
 
             while postingslists != []:
 
                 postingslist3=postingslists.pop(0)
 
-                intersection = set(postingslist3).intersection(set(intersection))
+                intersection = set(postingslist3.postingslist).intersection(set(intersection))
 
-            return sorted(list(intersection), key=natural_sortkey)
+            intersection_obj = Postingslist('')
+
+            intersection_obj._update_postingslist(sorted(list(intersection), key=natural_sortkey))
+
+            return intersection_obj
 
 ###########################################################
 ####################### Testing ###########################
@@ -86,7 +99,7 @@ class Query(object):
 
 def main():
 
-    pass
+    query = Query()
 
 if __name__=='__main__':
 

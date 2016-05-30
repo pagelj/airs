@@ -29,23 +29,35 @@ def natural_sortkey(string):
 
 class Postingslist(object):
 
-    def __init__(self, term_id, doc_id):
+    def __init__(self, term_id):
 
         self.term_id = term_id
-        self.docid = doc_id
-        self.postingslist = [self.docid]
+        self.postingslist = []
         self.postingslist_len = len(self.postingslist)
 
-    def __str__(self):
+    #def __str__(self):
 
-        return str(self.postingslist)
+    #    return str(self.postingslist)
 
     def _update_postingslist(self, doc_id):
 
-        self.postingslist.append(doc_id)
-        self.postingslist = sorted(self.postingslist, key=natural_sortkey)
+        if isinstance(doc_id, basestring):
 
-        self.postingslist_len = len(self.postingslist)
+            self.postingslist.append(doc_id)
+            self.postingslist = sorted(self.postingslist, key=natural_sortkey)
+
+            self.postingslist_len = len(self.postingslist)
+
+        else:
+
+            self.postingslist.extend(doc_id)
+            self.postingslist = sorted(self.postingslist, key=natural_sortkey)
+
+            self.postingslist_len = len(self.postingslist)
+
+    def getPostingsList(self):
+
+        return self.postingslist
 
 ###########################################################
 ####################### Testing ###########################

@@ -79,9 +79,10 @@ class InvertedIndex(object):
         query = Query()
 
         postingslists = query.return_postingslist(query.query, self.inv_index)
+
         intersection = query.logical_and(postingslists)
 
-        if intersection == []:
+        if intersection.postingslist == []:
 
             print '\nYour query could not be found in the collection.'
 
@@ -89,10 +90,12 @@ class InvertedIndex(object):
 
             print '\nYour queried word(s) occur in the following document(s):'
             print
-            for doc_id in intersection:
+
+            for doc_id in intersection.postingslist:
+
                 print doc_id
 
-        #ranking=Ranking(self.terms,intersection)
+        ranking=Ranking(query,self.inv_index,self.docs)
 
 
 
@@ -104,7 +107,7 @@ class InvertedIndex(object):
         for name,document in self.doc_obj.items():
 
             doc=Document(document)
-            self.docs[name]=doc.tokens
+            self.docs[name]=doc
             term=Term(doc.tokens)
             self.termsdict[name]=term
 
@@ -125,8 +128,10 @@ class InvertedIndex(object):
 
                 else:
 
-                    self.inv_index[term]=Postingslist(term,name)
-                    #print (term,self.inv_index[term])
+                    postingslist = Postingslist(term)
+                    postingslist._update_postingslist(name)
+                    self.inv_index[term]=postingslist
+                    #print (term,self.inv_index[term].postingslist)
 
         if self.userargs.store:
 
