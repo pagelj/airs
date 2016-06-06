@@ -95,7 +95,7 @@ class InvertedIndex(object):
 
                 print doc_id
 
-        ranking=Ranking(query,self.inv_index,self.docs)
+        ranking=Ranking(query,self.inv_index,self.docs,random_number)
 
 
 
@@ -159,7 +159,7 @@ def get_user_args(args):
     ap = argparse.ArgumentParser()
     ap.add_argument('-c', '--corpus', metavar='PATH', type=str, default='./amazon_reviews',
                     help='specify a path for corpus files. Default is ./amazon_reviews')
-    ap.add_argument('-r', '--random', metavar='N', default='100',
+    ap.add_argument('-r', '--random', metavar='N', default='10000',
                     help='specify number of randomized documents used for the inverted index. Default is 100 files. If all documents should be considered, type -r all')
     ap.add_argument('-s', '--store', action='store_true',
                     help='activate this flag if you want to store the inverted index into a pickle file')
