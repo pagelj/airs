@@ -14,8 +14,8 @@ class Ranking(object):
 #        print self.inv_index
         self.ranking=self.cosinesimilarity(self.query,self.inv_index)
         self.tf=self.gettermfrequency(self.inv_index)
-        self.ranking.to_csv('/home/prajitdhar/Desktop/pagelj-airs-ac4871f7a5a2/ranking.csv')
-        self.tf.to_csv('/home/prajitdhar/Desktop/pagelj-airs-ac4871f7a5a2/tf.csv')
+        self.ranking.to_csv('../ranking.csv')
+        self.tf.to_csv('../tf.csv')
 
     def gettermfrequency(self,inv_index):
         termfrequency={}
@@ -29,11 +29,11 @@ class Ranking(object):
                         termfrequency[term]=1
 #        print termfrequency
         tf=pd.DataFrame(termfrequency.values(),index=termfrequency.keys(),columns=['Term_Frequency'])
-        print 
+        print
         sortedtf=tf.sort(['Term_Frequency'],ascending=False)
         print sortedtf
         return sortedtf
-                
+
 
     def cosinesimilarity(self,query,inv_index):
 
@@ -49,7 +49,7 @@ class Ranking(object):
                     postlist=pl.postingslist
     #                print "\nPostings List\n",postlist
                     for doc in postlist:
-    
+
                         if doc in scores:
     #                        print "\nDocument 1\n",doc
                             scores[doc]+=self.tfidf_query(term,query)*self.tfidf_doc(term,doc)
@@ -68,10 +68,10 @@ class Ranking(object):
             for doc in scores.keys():
                 if doc in magnitude:
                     magnitude[doc]+= self.tfidf_doc(term,doc)**2
-            
+
                 else:
                     magnitude[doc]= self.tfidf_doc(term,doc)**2
-        
+
 #        print magnitude
         magrep=pd.DataFrame(magnitude.values(),index=scores.keys(),columns=['Denominator'])
 #        print magrep
@@ -81,10 +81,10 @@ class Ranking(object):
         sortedcosine=cosinesimilarity.sort(['Cosine_Similarity'],ascending=False)
         print sortedcosine
         return sortedcosine
-        
-        
+
+
     def tfidf_query(self,term,coll):
-        
+
         """
         print "\nTerm\n",term
         print "\nNumerator\n",coll.count(term)
@@ -128,5 +128,3 @@ class Ranking(object):
             print "\nDoc TF-IDF\n",tf*idf
             """
             return tf*idf
-
-
