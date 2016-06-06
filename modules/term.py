@@ -66,9 +66,9 @@ class Term(object):
         self.tf = self.compute_tf(self.tokens,self.terms)
 
 
-    def __str__(self):
+    #def __str__(self):
 
-        return str(self.terms)
+    #    return str(self.terms)
 
 
     def terminator(self,tokens):

@@ -18,7 +18,7 @@ from tokenizer import *
 
 class Document(object):
 
- 
+
     def __init__(self, content):
 
         #print content
@@ -27,11 +27,13 @@ class Document(object):
         #self.date
 
         self.tokens=Tokenizer(content)
+
         self.numofwords=len(self.tokens.tokenized)
+
         #return self.tokens
 
 
-    
+
 
 ###########################################################
 ####################### Testing ###########################

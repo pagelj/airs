@@ -33,14 +33,14 @@ class Parsedoc(object):
     the file content and file id
     """
 
-    def __init__(self, directory):
+    def __init__(self, directory, random_number):
 
         # Store the directory
         self.directory = directory
         # Store the output of filereader as the content and the docid
-        self.content, self.docid = self.filereader(self.directory)
+        self.content, self.docid = self.filereader(self.directory, random_number)
 
-    def filereader(self, directory):
+    def filereader(self, directory, random_number):
 
         r.seed(20)
         # store is a list to hold the file contents
@@ -54,7 +54,15 @@ class Parsedoc(object):
             pass
 
         #choices will store the random N files we will use in the experiment
-        choices=r.sample(xrange(len(files)),10)
+        if random_number == 'all':
+
+            N = len(files)
+
+        else:
+
+            N = int(random_number)
+
+        choices=r.sample(xrange(len(files)),N)
 
         for x in choices:
             with open(files[x]) as inp_data:
