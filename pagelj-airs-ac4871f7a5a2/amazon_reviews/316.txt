@@ -1,0 +1,2 @@
+Foscam F18910W IP/Network Camera
+This is the second camera I have purchased from Foscam. Very easy to setup. I use them for security around my home. My cameras upload an image to an FTP Server every time they sense motion and alert me via e-mail. I can view both cameras on my cell phone at the same time. I very much recommend this camera.

@@ -1,0 +1,2 @@
+Three wire (two bands) or four wire (four bands) -- guess away
+The complaints on this seem to go back and forth. The diameter of the 3.5mm receptacle on one end and 2.5mm plug on the other, with a short cable between, is fine. When I ordered it (6/2011) the Amazon pictures showed a *stereo* adapter, with two bands on the plug == three wires. Instead I received something with three bands on the plug = four wires. This isn't the simple "stereo" adapter I expected and doesn't work since it shorts out one channel. Take a guess at what you'll receive if you order one.

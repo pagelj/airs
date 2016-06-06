@@ -1,0 +1,31 @@
+camera good\t24.txt 1\t46.txt 0\t59.txt 0\t76.txt 1\t96.txt 0\t124.txt 0\t159.txt 1\t170.txt 1\t226.txt 1\t287.txt 0\t298.txt 1\t305.txt 1\t427 0\t538.txt 1\t582.txt 1\t635.txt 1\t669.txt 1\t725.txt 1\t847.txt 0\t986.txt 1\t988.txt 0\t1056.txt 1\t1112.txt 0\t1120.txt 1\t1127.txt 0\t1131 1\t1400 1\t1419.txt 0\t1472.txt 1\t1484.txt 0\t1512.txt 1\t1597.txt 1\t1616.txt 1\t1691.txt 1691.txt 0\t1825.txt 1\t1881.txt 1\t1981.txt 1\t2008.txt 1\t2038.txt 0\t2152.txt 1\t2192.txt 1\t2243.txt 1\t2256.txt 1\t2263.txt 1\t2429.txt 1\t2435.txt 1\t2513.txt 1\t2537.txt 1\t2569.txt 1\t2603.txt 0\t2624.txt 1\t2630.txt 0\t2688.txt 0\t2764.txt 1\t2807.txt 1\t2856.txt 1\t2885.txt 1\t2934.txt 1\t2971.txt 0\t3034.txt 1\t3039.txt 1\t3083.txt 1\t3175.txt 1\t3180.txt 1\t3475.txt 0\13481.txt 1\t3483.txt 1\t3519.txt 1\t3535.txt 0\t
+camera good quality
+camera good quality cheap
+camera good quality expensive
+camera bad
+big zoom
+camera card
+camera broken
+camera sony
+camera expensive
+good cheap
+functional
+product happy
+angry
+
+satisfied
+high quality
+low quality
+camera for holidays
+camera wifi
+camera low price
+camera memory
+phone cheap good quality
+phone camera resolution
+phone big storage
+phone display
+iphone 5
+phone samsung
+cool stuff
+tablet screen
+camera usage

@@ -1,0 +1,2 @@
+works like a charm
+Pretty fast for a class 4; 8-10 MB/s. Haven't had any problems with it so far. Great for transfering and storing huge files.

@@ -1,0 +1,2 @@
+DOES NOT CONNECT TO HOME NETWORK
+Received 2 of these labtops, neither would connect to labtop.  Dell software support was of no use.  And internet searches proved this impossible to fix.  Not ideal for a work setting.

@@ -1,0 +1,2 @@
+Toaster handle did not work
+The basic function of the toaster handle holding toast down did not work.  Otherwise I would have liked it.  I returned it.

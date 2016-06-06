@@ -1,0 +1,2 @@
+good
+It works great but there are a few things. This start model the Bluetooth doesn't work but still shows the function for it. The gps has a function button but doesn't describe what it needs to get it.

@@ -1,0 +1,2 @@
+Nice lens
+This is well-known to be a really nice telephoto lens. It works well on the Blackmagic Cinema Camera, including electronic control via the camera or a remote through the camera.

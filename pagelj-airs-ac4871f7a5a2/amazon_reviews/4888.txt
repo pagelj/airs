@@ -1,0 +1,2 @@
+Astro3E Works as intended
+It works as intended to be but you have to take note that you cannot get the full 10000 maH. There is 30% power loss during the charging process. I tested on my Galaxy s2 with 1650 maH battery. I can get exactly a total of 4 times full recharge  4 x 1650 = 6600 maH. The Battery Pack is not light nor heavy. I always bring this battery whenever I go. I recommended this product.
