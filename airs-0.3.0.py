@@ -29,6 +29,7 @@ from modules.parsedoc import *
 from modules.tokenizer import *
 from modules.query import *
 from modules.ranking import *
+from modules.evaluation import *
 import os
 import sys
 import re
@@ -49,7 +50,7 @@ class InvertedIndex(object):
     def __init__(self, userargs):
 
         # get user arguments
-
+        
         self.userargs = userargs
 
         corpus_path = userargs.corpus
@@ -77,6 +78,7 @@ class InvertedIndex(object):
             self._create_inv_index()
 
         while 1:
+            
 
             query = Query()
 
@@ -102,8 +104,12 @@ class InvertedIndex(object):
             if intersection.postingslist != []:
 
                 ranking=Ranking(query,self.inv_index,self.docs,random_number)
+                evaluation=Evaluation(ranking)
 
 
+            userinput = str(raw_input('\n\nWould you like to continue?\n\n'))
+            if userinput=="no":
+                sys.exit("Program quting")
 
     def _create_terms(self):
 
@@ -165,7 +171,7 @@ def get_user_args(args):
     ap = argparse.ArgumentParser()
     ap.add_argument('-c', '--corpus', metavar='PATH', type=str, default='./amazon_reviews',
                     help='specify a path for corpus files. Default is ./amazon_reviews')
-    ap.add_argument('-r', '--random', metavar='N', default='10000',
+    ap.add_argument('-r', '--random', metavar='N', default='100',
                     help='specify number of randomized documents used for the inverted index. Default is 100 files. If all documents should be considered, type -r all')
     ap.add_argument('-s', '--store', action='store_true',
                     help='activate this flag if you want to store the inverted index into a pickle file')
