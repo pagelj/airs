@@ -117,37 +117,20 @@ class Tokenizer(object):
                 token = re.sub(r'(.*)' + '(' + en_clitics + ')', r' \1 \2 ', token)
                 text_new.extend(token.split())
 
+            # if the token contains a dot at the end
             elif re.search(r'[.]$', token):
 
-                # if the next token begins with a small letter,
-                # keep the token as an abbrevation
+                token = re.sub(r'([.])', r' \1 ', token)
 
-                try:
+                # split other punctuations
+                if re.search(punctuation, token):
 
-                    if text[token_id+1][0].islower():
-
-                        text_new.append(token)
-
-                    else:
-
-                        token = re.sub(r'([.])', r' \1 ', token)
-
-                        # split other punctuations
-                        if re.search(punctuation, token):
-
-                            token = re.sub(r'(' + punctuation + ')', r' \1 ', token)
-                            text_new.extend(token.split())
-
-                        else:
-
-                            text_new.append(token)
-
-                # If the token with a dot is the last token
-                # separate the dot.
-                except IndexError:
-
-                    token = re.sub(r'([.])', r' \1 ', token)
+                    token = re.sub(r'(' + punctuation + ')', r' \1 ', token)
                     text_new.extend(token.split())
+
+                else:
+
+                    text_new.append(token)
 
             # if a punctuation occurs at the beginning
             # or the end of the token, separate it
@@ -171,11 +154,11 @@ class Tokenizer(object):
 def main():
 
     Tokenizer1 = Tokenizer("""This is a test sentence. This is another sentence!!! "Why is it so?"
-                            He'll never know. That's a shame. He won't ever do it. I can't tell.
+                            He'll never know.... That's a shame. He won't ever do it. I can't tell.
                             Keep dot when it is an abbr. and the following token is lowercased. !Hyphen-Test. -Test test-test""")
     print Tokenizer1.tokenized
 
-    parsedoc_obj = Parsedoc(os.path.expanduser('../amazon_reviews'))
+    parsedoc_obj = Parsedoc(os.path.expanduser('../amazon_reviews'),'all')
     texts_obj,file_name = parsedoc_obj.content,parsedoc_obj.docid
 
     doc_obj={}
@@ -184,6 +167,8 @@ def main():
     for name,document in doc_obj.items():
 
         doc=Document(document)
+        print
+        print name
         print doc.tokens
 
 

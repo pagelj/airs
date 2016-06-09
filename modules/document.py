@@ -15,6 +15,7 @@ Summer Term 16
 
 #from modules.parsedoc import *
 from tokenizer import *
+from query import *
 
 class Document(object):
 
@@ -32,7 +33,38 @@ class Document(object):
 
         #return self.tokens
 
+    def snippet(doc, query):
 
+        tokens = doc.tokens.tokenized
+        query = query.query
+        snippet = []
+
+        for token_id in range(len(tokens)):
+
+            for word in query:
+
+                if tokens[token_id] == word:
+
+                    try:
+
+                        snippet.append(tokens[token_id-5])
+                        snippet.append(tokens[token_id-4])
+                        snippet.append(tokens[token_id-3])
+                        snippet.append(tokens[token_id-2])
+                        snippet.append(tokens[token_id-1])
+                        snippet.append('>>>'+tokens[token_id]+'<<<')
+                        snippet.append(tokens[token_id+1])
+                        snippet.append(tokens[token_id+2])
+                        snippet.append(tokens[token_id+3])
+                        snippet.append(tokens[token_id+4])
+                        snippet.append(tokens[token_id+5])
+                        snippet.append('\n\n')
+
+                    except IndexError:
+
+                        continue
+
+        return ' '.join(snippet)
 
 
 ###########################################################

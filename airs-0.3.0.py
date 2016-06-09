@@ -76,26 +76,32 @@ class InvertedIndex(object):
 
             self._create_inv_index()
 
-        query = Query()
+        while 1:
 
-        postingslists = query.return_postingslist(query.query, self.inv_index)
+            query = Query()
 
-        intersection = query.logical_and(postingslists)
+            postingslists = query.return_postingslist(query.query, self.inv_index)
 
-        if intersection.postingslist == []:
+            intersection = query.logical_and(postingslists)
 
-            print '\nYour query could not be found in the collection.'
+            if intersection.postingslist == []:
 
-        else:
+                print '\nYour query could not be found in the collection.'
 
-            print '\nYour queried word(s) occur in the following document(s):'
-            print
+            else:
 
-            for doc_id in intersection.postingslist:
+                print '\nYour queried word(s) occur in the following document(s):'
+                print
 
-                print doc_id
+                for doc_id in intersection.postingslist:
 
-        ranking=Ranking(query,self.inv_index,self.docs,random_number)
+                    print
+                    print doc_id
+                    print Document.snippet(self.docs[doc_id],query)
+
+            if intersection.postingslist != []:
+
+                ranking=Ranking(query,self.inv_index,self.docs,random_number)
 
 
 

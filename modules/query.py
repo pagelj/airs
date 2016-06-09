@@ -31,7 +31,7 @@ class Query(object):
 
     def __init__(self):
 
-        self.userinput = str(raw_input('Please enter your query.\n\n'))
+        self.userinput = str(raw_input('\n\nPlease enter your query.\n\n'))
         self.query = self.process_query()
 
     def process_query(self):
