@@ -72,33 +72,33 @@ camera with long battery runtime
 1618.txt,0
 2311.txt,0
 3538.txt,0
-3820.txt,
-3978.txt,
-4484.txt,
-5256.txt,
-7556.txt,
-8088.txt,
-8132.txt,
-9238.txt,
-9581.txt,
-9610.txt,
+3820.txt,0
+3978.txt,0
+4484.txt,0
+5256.txt,0
+7556.txt,0
+8088.txt,0
+8132.txt,0
+9238.txt,0
+9581.txt,0
+9610.txt,0
 
 lightweight camera
-616.txt,
-1636.txt,
-1980.txt,
-2209.txt,
-2504.txt,
-2821.txt,
-2960.txt,
-3119.txt,
-3529.txt,
-3568.txt,
-3675.txt,
-3978.txt,
-4537.txt,
-8445.txt,
-9047.txt,
+616.txt,0
+1636.txt,0
+1980.txt,0
+2209.txt,0
+2504.txt,0
+2821.txt,0
+2960.txt,0
+3119.txt,0
+3529.txt,1
+3568.txt,0
+3675.txt,0
+3978.txt,0
+4537.txt,0
+8445.txt,0
+9047.txt,0
 
 camera with good memory
 314.txt,0
@@ -135,21 +135,21 @@ phone camera with good resolution
 9998.txt,0
 
 camera sony
-96.txt,
-191.txt,
-234.txt,
-686.txt,
-741.txt,
-930.txt,
-1010.txt,
-1262.txt,
-2278.txt,
-2390.txt,
-2817.txt,
-3978.txt,
-6226.txt,
-8750.txt,
-9850.txt,
+96.txt,0
+191.txt,0
+234.txt,0
+686.txt,0
+741.txt,0
+930.txt,0
+1010.txt,0
+1262.txt,0
+2278.txt,0
+2390.txt,0
+2817.txt,0
+3978.txt,0
+6226.txt,0
+8750.txt,1
+9850.txt,0
 
 hd camera
 349.txt,0
@@ -185,21 +185,21 @@ good resolution mobile
 9312.txt,0
 
 I need a good camera with high resolution preferably cheap
-234.txt,
-1324.txt,
-1414.txt,
-2013.txt,
-2140.txt,
-2159.txt,
-2844.txt,
-3541.txt,
-4491.txt,
-5135.txt,
-5840.txt,
-5872.txt,
-7810.txt,
-8771.txt,
-9655.txt,
+234.txt,1
+1324.txt,0
+1414.txt,0
+2013.txt,0
+2140.txt,0
+2159.txt,0
+2844.txt,0
+3541.txt,0
+4491.txt,0
+5135.txt,0
+5840.txt,0
+5872.txt,0
+7810.txt,0
+8771.txt,0
+9655.txt,0
 
 small optical camera
 1004.txt,1
@@ -236,21 +236,21 @@ small optical camera
 9670.txt,0
 
 64gb camera
-1262.txt,
-2390.txt,
-2960.txt,
-3147.txt,
-3675.txt,
-4246.txt,
-4537.txt,
-5637.txt,
-5705.txt,
-5706.txt,
-5734.txt,
-6226.txt,
-6720.txt,
-7387.txt,
-8829.txt,
+1262.txt,0
+2390.txt,0
+2960.txt,0
+3147.txt,0
+3675.txt,0
+4246.txt,0
+4537.txt,0
+5637.txt,0
+5705.txt,0
+5706.txt,0
+5734.txt,0
+6226.txt,0
+6720.txt,0
+7387.txt,0
+8829.txt,0
 
 tv with big screen high resolution
 
