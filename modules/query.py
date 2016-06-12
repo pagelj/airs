@@ -29,14 +29,21 @@ pattern = r'[& ]'
 
 class Query(object):
 
-    def __init__(self):
+    def __init__(self,query_input,query_type):
 
-        self.userinput = str(raw_input('\n\nPlease enter your query.\n\n'))
-        self.query = self.process_query()
+        if query_type == 'interactive':
 
-    def process_query(self):
+            self.userinput = str(raw_input('\n\nPlease enter your query.\n\n'))
 
-        return re.split(pattern,self.userinput)
+            self.query = self.process_query(self.userinput)
+
+        elif query_type == 'automatic':
+
+            self.query = query_input
+
+    def process_query(self,query_input):
+
+        return re.split(pattern,query_input)
 
     def return_postingslist(self, query, terms):
 

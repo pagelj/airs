@@ -13,6 +13,7 @@ class Ranking(object):
         self.docs=docs
 #        print self.inv_index
         self.ranking=self.cosinesimilarity(self.query,self.inv_index)
+        print self.ranking
         self.ranking.to_csv('../ranking.csv')
 
     def cosinesimilarity(self,query,inv_index):
@@ -69,7 +70,7 @@ class Ranking(object):
         cosinesimilarity['Cosine_Similarity']=cosinesimilarity['Numerator']/(cosinesimilarity['Denominator'])**0.5
 #        print cosinesimilarity
         sortedcosine=cosinesimilarity.sort(['Cosine_Similarity'],ascending=False)
-        print sortedcosine
+
         return sortedcosine
 
 

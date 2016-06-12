@@ -53,21 +53,21 @@ class InvertedIndex(object):
 
         self.userargs = userargs
 
-        corpus_path = userargs.corpus
-        random_number = userargs.random
-        pickle_file_boolean = userargs.pickle
+        self.corpus_path = userargs.corpus
+        self.random_number = userargs.random
+        self.pickle_file_boolean = userargs.pickle
 
 
         # get the texts
 
-        parsedoc_obj = Parsedoc(os.path.expanduser(corpus_path), random_number)
+        parsedoc_obj = Parsedoc(os.path.expanduser(self.corpus_path), self.random_number)
         texts_obj,file_name = parsedoc_obj.content,parsedoc_obj.docid
 
         self.doc_obj={}
         self.doc_obj=dict(zip(file_name,texts_obj))
         self._create_terms()
 
-        if pickle_file_boolean:
+        if self.pickle_file_boolean:
 
             with open('../inverted_index.pkl','rb') as fp:
 
@@ -77,10 +77,21 @@ class InvertedIndex(object):
 
             self._create_inv_index()
 
+
+        #self.interactive_query()
+
+        self.eval_ranking()
+
+
+
+
+
+
+    def interactive_query(self):
+
         while 1:
 
-
-            query = Query()
+            query = Query('','interactive')
 
             postingslists = query.return_postingslist(query.query, self.inv_index)
 
@@ -108,12 +119,83 @@ class InvertedIndex(object):
                 evaluation=Evaluation(ranking)
             """
 
-            ranking=Ranking(query,self.inv_index,self.docs,random_number)
+            ranking=Ranking(query,self.inv_index,self.docs,self.random_number)
             evaluation=Evaluation(ranking)
 
             userinput = str(raw_input('\n\nWould you like to continue? Type "no" or "n" to quit the program.\n\n'))
             if userinput in ("no","n"):
                 sys.exit("\nProgram quiting\n")
+
+
+    def eval_ranking(self):
+
+        tp_total_list = []
+        fp_total_list = []
+        fn_total_list = []
+        tn_total_list = []
+        precision_total = 0
+        recall_total = 0
+        f1_total = 0
+        golddata = read_golddata()
+        queries = golddata.keys()
+        query_list=[]
+
+        for query in queries:
+
+            query = Query(query,'automatic')
+            query_list.append(query)
+
+        for query in query_list:
+
+            prediction = []
+
+            #print query.query
+            ranking=Ranking(query,self.inv_index,self.docs,self.random_number)
+            gold_docs = golddata[query.query]
+            #print 'gold\n', gold_docs
+
+            #print ranking.ranking.index
+
+            for index in ranking.ranking[:15].index:
+
+                prediction.append((index,'1'))
+
+            for index in ranking.ranking[16:].index:
+
+                prediction.append((index,'0'))
+
+            #print 'prediction\n',prediction
+
+            tp,fp,fn,tn = confusion_matrix(gold_docs,prediction)
+            tp_total_list.append(tp)
+            fp_total_list.append(fp)
+            fn_total_list.append(fn)
+            tn_total_list.append(tn)
+            print tp,fp,fn,tn
+            precision = compute_precision(tp,fp)
+            print 'precision',precision
+            recall = compute_recall(tp,fn)
+            print 'recall',recall
+            f1 = compute_f1(precision,recall)
+            print 'f1',f1
+
+        tp_total = sum(tp_total_list)
+        fp_total = sum(fp_total_list)
+        fn_total = sum(fn_total_list)
+        tn_total = sum(tn_total_list)
+
+        print
+        print
+        print 'total:',tp_total,fp_total,fn_total,tn_total
+
+        precision_total = compute_precision(tp_total,fp_total)
+        print 'precision total:',precision_total
+        recall_total = compute_recall(tp_total,fn_total)
+        print 'recall total:',recall_total
+
+        f1_total = compute_f1(precision_total,recall_total)
+        print 'f1 total:',f1_total
+
 
     def _create_terms(self):
 
