@@ -132,9 +132,10 @@ def compute_f1(precision,recall):
 
 class Evaluation(object):
 
-    def __init__(self,ranking):
-
-        self.ranking = ranking.ranking
+    def __init__(self,ranking,query):
+        self.ranking=ranking.ranking
+        self.query=query.userinput
+        self.describe=self.ranking.Cosine_Similarity.describe()
 
         self.get_annotation_files()
 
@@ -173,6 +174,76 @@ class Evaluation(object):
         files.extend(filesamplemid)
         files.extend(filesamplehigh)
         print sorted(files,key=natural_sortkey)
+        
+
+
+
+    def evaluation(self):
+        
+
+        low=self.ranking[self.ranking.Cosine_Similarity<self.describe[4]]
+#        print "\nOld Low\n",low
+#        low.rename(columns={'Unnamed: 0':'Filename'}, inplace=True)
+        mid=self.ranking[(self.ranking.Cosine_Similarity>=self.describe[4]) & (self.ranking.Cosine_Similarity<self.describe[6])]
+#        mid.rename(columns={'Unnamed: 0':'Filename'}, inplace=True)
+        high=self.ranking[self.ranking.Cosine_Similarity>=self.describe[6]]
+#        high.rename(columns={'Unnamed: 0':'Filename'}, inplace=True)
+
+
+        try:
+            samplelow=low.loc[rd.sample(list(low.index),5)]
+        except ValueError:
+            samplelow=low
+        try:
+            samplemid=mid.loc[rd.sample(list(mid.index),5)]
+        except ValueError:
+            samplemid=mid
+        try:
+            samplehigh=high.loc[rd.sample(list(high.index),5)]
+        except ValueError:
+            samplehigh=high
+
+
+        files=[]
+        scores=[]
+        filesamplelow=list(samplelow.index.values)
+        scorelow=list(samplelow.Cosine_Similarity)
+        filesamplemid=list(samplemid.index.values)
+        scoremid=list(samplemid.Cosine_Similarity)
+        filesamplehigh=list(samplehigh.index.values)
+        scorehigh=list(samplehigh.Cosine_Similarity)
+        files.extend(filesamplelow)
+        files.extend(filesamplemid)
+        files.extend(filesamplehigh)
+        scores.extend(scorelow)
+        scores.extend(scoremid)
+        scores.extend(scorehigh)
+#        print sorted(files,key=natural_sortkey)
+#        print scores
+        
+        nullme={}
+        response=""
+        i=0
+        for f in files:
+            temp=open(os.getcwd()+"/"+f)
+            nullme[f]=list()
+#            print temp.read()
+            response=1
+#            response=int(raw_input("\nRate 1 for relevancy and 0 for Irrelevancy\n"))
+            nullme[f].append(response)
+            nullme[f].append(scores[i])
+            i+=1
+        print nullme
+        querylist=[]
+        querylist.append(self.query)
+        querylist=querylist*len(nullme)
+        filedf=pd.DataFrame(nullme.keys(),columns=['File'])
+        valuedf=pd.DataFrame(nullme.values(),columns=['Relevancy','Score'])
+        querydf=pd.DataFrame(querylist,columns=['Query'])
+        evaluation=pd.concat([querydf,filedf,valuedf],axis=1)
+        print evaluation
+        
+        return evaluation
 
 ###########################################################
 ####################### Testing ###########################
