@@ -50,7 +50,7 @@ class InvertedIndex(object):
     def __init__(self, userargs):
 
         # get user arguments
-        
+
         self.userargs = userargs
 
         corpus_path = userargs.corpus
@@ -78,7 +78,7 @@ class InvertedIndex(object):
             self._create_inv_index()
 
         while 1:
-            
+
 
             query = Query()
 
@@ -101,15 +101,19 @@ class InvertedIndex(object):
                     print doc_id
                     print Document.snippet(self.docs[doc_id],query)
 
+            """
             if intersection.postingslist != []:
 
                 ranking=Ranking(query,self.inv_index,self.docs,random_number)
                 evaluation=Evaluation(ranking)
+            """
 
+            ranking=Ranking(query,self.inv_index,self.docs,random_number)
+            evaluation=Evaluation(ranking)
 
-            userinput = str(raw_input('\n\nWould you like to continue?\n\n'))
-            if userinput=="no":
-                sys.exit("Program quting")
+            userinput = str(raw_input('\n\nWould you like to continue? Type "no" or "n" to quit the program.\n\n'))
+            if userinput in ("no","n"):
+                sys.exit("\nProgram quiting\n")
 
     def _create_terms(self):
 

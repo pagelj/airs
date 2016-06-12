@@ -9,6 +9,13 @@ from ranking import *
 import pandas as pd
 import random as rd
 
+def natural_sortkey(string):
+
+    # Function for sorting integer parts of
+    # a string
+
+    tokenize = re.compile(r'(\d+)|(\D+)').findall
+    return tuple(int(num) if num else alpha for num, alpha in tokenize(string))
 
 class Evaluation(object):
 
@@ -47,4 +54,4 @@ class Evaluation(object):
         files.extend(filesamplelow)
         files.extend(filesamplemid)
         files.extend(filesamplehigh)
-        print files
+        print sorted(files,key=natural_sortkey)
