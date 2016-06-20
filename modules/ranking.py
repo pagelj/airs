@@ -60,9 +60,9 @@ class Ranking(object):
                 else:
                 """
                 if doc in magnitude:
-                    magnitude[doc]+= self.tfidf_doc(term,doc)**2
+                    magnitude[doc]+= self.tfidf_doc(term.term,doc)**2
                 else:
-                    magnitude[doc]= self.tfidf_doc(term,doc)**2
+                    magnitude[doc]= self.tfidf_doc(term.term,doc)**2
 #        print magnitude
         magrep=pd.DataFrame(magnitude.values(),index=scores.keys(),columns=['Denominator'])
 #        print magrep

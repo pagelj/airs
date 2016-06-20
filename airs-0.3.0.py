@@ -78,9 +78,9 @@ class InvertedIndex(object):
             self._create_inv_index()
 
 
-        #self.interactive_query()
+        self.interactive_query()
 
-        self.eval_ranking()
+        #self.eval_ranking()
 
 
 
@@ -119,8 +119,8 @@ class InvertedIndex(object):
                 evaluation=Evaluation(ranking)
             """
 
-            ranking=Ranking(query,self.inv_index,self.docs,self.random_number)
-            evaluation=Evaluation(ranking)
+            #ranking=Ranking(query,self.inv_index,self.docs,self.random_number)
+            #evaluation=Evaluation(ranking)
 
             userinput = str(raw_input('\n\nWould you like to continue? Type "no" or "n" to quit the program.\n\n'))
             if userinput in ("no","n"):
@@ -156,11 +156,11 @@ class InvertedIndex(object):
 
             #print ranking.ranking.index
 
-            for index in ranking.ranking[:15].index:
+            for index in ranking.ranking[:30].index:
 
                 prediction.append((index,'1'))
 
-            for index in ranking.ranking[16:].index:
+            for index in ranking.ranking[31:].index:
 
                 prediction.append((index,'0'))
 
@@ -206,10 +206,17 @@ class InvertedIndex(object):
 
             doc=Document(document)
             self.docs[name]=doc
-            term=Term(doc.tokens)
-            self.termsdict[name]=term
+            terms=terminator(doc.tokens.tokenized)
+            for term in terms:
+                term_obj = Term(term)
+                if name in self.termsdict:
+                    self.termsdict[name].append(term_obj)
+                    self.termsdict[name]=list(set(self.termsdict[name]))
+                else:
+                    self.termsdict[name]=[term_obj]
 
         self.terms = self.termsdict.values()
+        self.terms
 
     def _create_inv_index(self):
 
@@ -217,9 +224,9 @@ class InvertedIndex(object):
 
         for name,terms in self.termsdict.items():
 
-            for term in terms.terms:
+            for term in terms:
 
-                if term in self.inv_index:
+                if term.term in self.inv_index:
 
                     self.inv_index[term]._update_postingslist(name)
                     #print (term,self.inv_index[term])

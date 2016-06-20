@@ -21,99 +21,81 @@ from tokenizer import *
 
 fileloc="/tmp"
 slash="/"
-
-def FolderCreater(terms):
-    alldirectories=[]
-    for term in terms:
-        alldirectories.extend(Recurser(term))
-    print len(alldirectories)
-    alldirectories=sorted(list(set(alldirectories)))
-
-    print alldirectories
-
-    for filedir in alldirectories:
-        os.mkdir(filedir,0750)
-
-
-
-def Recurser(term):
-    lister=[]
-    for i in range(len(term)):
-        lister.append(Splitter(term[:i+1]))
-
-    return lister
-
-def Splitter(term):
-    temp=str(slash+term)
-    if len(term)==1:
-        return str(fileloc+temp)
-    else:
-        return str(Splitter(term[:-1])+temp)
-
+special_char = r"""[!,."']"""
 
 ################################################
 ##################### Classes ##################
 ################################################
 
-special_char = r"""[!,."']"""
-
 class Term(object):
 
-    def __init__(self,tokens):
+    def __init__(self,term):
 
-        self.tokens = tokens.tokenized
-        self.terms = self.terminator(self.tokens)
-        self.tf = self.compute_tf(self.tokens,self.terms)
+        self.term = term
+
+    def __str__(self):
+
+        return 'Term object:\n'+str(self.term)
+
+    def __eq__(self,other):
+
+        if self.term == other.term:
+
+            return True
+
+        else:
+
+            return False
 
 
-    #def __str__(self):
+################################################
+################# Functions ####################
+################################################
 
-    #    return str(self.terms)
+def terminator(tokens):
 
+    terms = set([x.lower() for x in tokens])
+    newterms = []
 
-    def terminator(self,tokens):
+    for term in terms:
 
-        terms = set([x.lower() for x in tokens])
-        newterms = []
+        if re.match(special_char,term):
 
-        for term in terms:
+            continue
 
-            if re.match(special_char,term):
+        # lemmatize clitics
 
-                continue
+        elif term == 'an':
 
-            # lemmatize clitics
+            newterms.append('a')
 
-            elif term == 'an':
+        elif term == "'m":
 
-                newterms.append('a')
+            newterms.append('am')
 
-            elif term == "'m":
+        elif term == "'re":
 
-                newterms.append('am')
+            newterms.append('are')
 
-            elif term == "'re":
+        elif term == "'d":
 
-                newterms.append('are')
+            newterms.append('would')
 
-            elif term == "'d":
+        elif term == "'ll":
 
-                newterms.append('would')
+            newterms.append('will')
 
-            elif term == "'ll":
+        elif term == "'t" or term == "'nt":
 
-                newterms.append('will')
+            newterms.append('not')
 
-            elif term == "'t" or term == "'nt":
+        else:
 
-                newterms.append('not')
+            newterms.append(term)
 
-            else:
+    return set(newterms)
 
-                newterms.append(term)
-
-        return set(newterms)
-
+"""
     def compute_tf(self, tokens, terms):
 
         tf_values = {}
@@ -137,6 +119,34 @@ class Term(object):
             tf_values[term] = 1 + math.log10(tf_values[term])
 
         return tf_values
+"""
+
+def FolderCreater(terms):
+    alldirectories=[]
+    for term in terms:
+        alldirectories.extend(Recurser(term))
+    print len(alldirectories)
+    alldirectories=sorted(list(set(alldirectories)))
+
+    print alldirectories
+
+    for filedir in alldirectories:
+        os.mkdir(filedir,0750)
+
+
+def Recurser(term):
+    lister=[]
+    for i in range(len(term)):
+        lister.append(Splitter(term[:i+1]))
+
+    return lister
+
+def Splitter(term):
+    temp=str(slash+term)
+    if len(term)==1:
+        return str(fileloc+temp)
+    else:
+        return str(Splitter(term[:-1])+temp)
 
 ###########################################################
 ####################### Testing ###########################
