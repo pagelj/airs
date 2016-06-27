@@ -20,11 +20,20 @@ Summer Term 16
 import os
 import re
 import random as r
+from evaluation import *
 
 
 ################################################
 ##################### Classes ##################
 ################################################
+
+golddata = read_golddata('golddata.txt')
+gold_tupels = golddata.values()
+gold_docs = []
+for list in gold_tupels:
+    for tupel in list:
+        gold_docs.append(int(tupel[0].rstrip('.txt')))
+
 
 class Parsedoc(object):
 
@@ -63,13 +72,14 @@ class Parsedoc(object):
             N = int(random_number)
 
         choices=r.sample(xrange(len(files)),N)
+        #choices=gold_docs
 
         for x in choices:
             with open(files[x]) as inp_data:
                 tempstore=inp_data.read()
                 store.append(tempstore)
                 names.append(files[x])
-        #print names
+
         return store,names
 
 ###########################################################

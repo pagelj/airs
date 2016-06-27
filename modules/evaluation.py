@@ -17,11 +17,11 @@ def natural_sortkey(string):
     tokenize = re.compile(r'(\d+)|(\D+)').findall
     return tuple(int(num) if num else alpha for num, alpha in tokenize(string))
 
-def read_golddata():
+def read_golddata(path):
 
     golddata={}
 
-    with open('../golddata.txt','r') as text:
+    with open(path,'r') as text:
 
         raw_text = text.read()
 
@@ -43,13 +43,14 @@ def read_golddata():
 
                 continue
 
+
             if query in golddata:
 
-                golddata[query].extend([(doc,relevance)])
+                    golddata[query].extend([(doc,relevance)])
 
             else:
 
-                golddata[query]=[(doc,relevance)]
+                    golddata[query]=[(doc,relevance)]
 
     return golddata
 
@@ -60,33 +61,29 @@ def confusion_matrix(gold,pred):
     fn = 0
     tn = 0
 
-    for annotation_gold in gold:
+    gold_relevant = []
 
-        doc_gold = annotation_gold[0]
-        relevance_gold = annotation_gold[1]
+    for tupel in gold:
 
-        for annotation_pred in pred:
+        if tupel[1] == '1':
 
-            doc_pred = annotation_pred[0]
-            relevance_pred = annotation_pred[1]
+            gold_relevant.append(tupel[0])
 
-            if doc_gold == doc_pred:
 
-                if relevance_gold == '1' and relevance_pred == '1':
+    for doc in pred:
 
-                    tp += 1
+        if doc in gold_relevant:
 
-                elif relevance_gold == '0' and relevance_pred == '0':
+            tp += 1
+            gold_relevant.remove(doc)
 
-                    tn += 1
+        else:
 
-                elif relevance_gold == '1' and relevance_pred == '0':
+            fp += 1
 
-                    fn += 1
+    fn = len(gold_relevant)
 
-                elif relevance_gold == '0' and relevance_pred == '1':
 
-                    fp += 1
 
     return tp,fp,fn,tn
 
