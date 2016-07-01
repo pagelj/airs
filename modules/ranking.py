@@ -95,7 +95,6 @@ class Ranking(object):
 
         #print "\nTerm2\n",term
         #print "\nIn Doc\n"
-
         doc_content = self.docs[coll].tokens.tokenized
 
         if term not in doc_content:
