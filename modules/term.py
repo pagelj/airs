@@ -12,12 +12,14 @@ Summer Term 16
 04/11/2016
 
 """
+
 import re
 import os
 import math
 from parsedoc import *
 from document import *
 from tokenizer import *
+from porter import *
 
 fileloc="/tmp"
 slash="/"
@@ -86,31 +88,31 @@ class Term(object):
 
             elif term == 'an':
 
-                newterms.append('a')
+                newterms.append(stem('a'))
 
             elif term == "'m":
 
-                newterms.append('am')
+                newterms.append(stem('am'))
 
             elif term == "'re":
 
-                newterms.append('are')
+                newterms.append(stem('are'))
 
             elif term == "'d":
 
-                newterms.append('would')
+                newterms.append(stem('would'))
 
             elif term == "'ll":
 
-                newterms.append('will')
+                newterms.append(stem('will'))
 
             elif term == "'t" or term == "'nt":
 
-                newterms.append('not')
+                newterms.append(stem('not'))
 
             else:
 
-                newterms.append(term)
+                newterms.append(stem(term))
 
         return set(newterms)
 

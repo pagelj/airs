@@ -36,6 +36,8 @@ import re
 import itertools
 import cPickle as pickle
 import argparse
+import numpy as np
+import matplotlib.pyplot as plt
 
 
 ################################################
@@ -57,31 +59,61 @@ class InvertedIndex(object):
         self.corpus_path = userargs.corpus
         self.random_number = userargs.random
         self.pickle_file_boolean = userargs.pickle
-
+        self.interactive = userargs.interactive
 
         # get the texts
+
+        print "\nReading in the corpus\n"
 
         parsedoc_obj = Parsedoc(os.path.expanduser(self.corpus_path), self.random_number)
         texts_obj,file_name = parsedoc_obj.content,parsedoc_obj.docid
 
         self.doc_obj={}
         self.doc_obj=dict(zip(file_name,texts_obj))
+
+        print "\nReading in of corpus finished\n"
+
+        print "\nCreate terms\n"
+        
         self._create_terms()
 
+        print "\nTerms created\n"
+
+
+        # Store the inverted index into a pickle file
+        # if requested by the user
         if self.pickle_file_boolean:
 
             with open('../inverted_index.pkl','rb') as fp:
+
+                print "\nRead inverted index from inverted_index.pkl\n"
 
                 self.inv_index = pickle.load(fp)
 
         else:
 
+            print "\nStart creating the inverted index\n"
+            
             self._create_inv_index()
 
+            print "\nInverted index created\n"
 
-        #self.interactive_query()
 
-        self.eval_ranking()
+        # Run interactive query if set by
+        # user, else run ranking on given queries from
+        # the gold standard
+        if self.interactive:
+            
+            self.interactive_query()
+
+        else:
+
+            
+            print "\nStart ranking of documents\n"
+            
+            self.eval_ranking()
+
+            print "\nRanking of documents finished\n"
 
 
 
@@ -148,7 +180,8 @@ class InvertedIndex(object):
 
         for query in query_list:
 
-            prediction = []
+            precision = []
+            recall = []
 
             #print query.query
             ranking=Ranking(query,self.inv_index,self.docs,self.random_number)
@@ -157,41 +190,59 @@ class InvertedIndex(object):
 
             #print ranking.ranking.index
 
-            for index in ranking.ranking[:15].index:
+            for i in range(1,len(ranking.ranking),1):
 
-                prediction.append(index)
+                prediction = []
+            
+                for index in ranking.ranking[:i].index:
 
-            #print 'prediction\n',prediction
+                    prediction.append(index)
 
-            tp,fp,fn,tn = confusion_matrix(gold_docs,prediction)
-            tp_total_list.append(tp)
-            fp_total_list.append(fp)
-            fn_total_list.append(fn)
-            tn_total_list.append(tn)
-            print tp,fp,fn,tn
-            precision = compute_precision(tp,fp)
+                #print 'prediction\n',prediction
+
+                tp,fp,fn,tn = confusion_matrix(gold_docs,prediction)
+                #tp_total_list.append(tp)
+                #fp_total_list.append(fp)
+                #fn_total_list.append(fn)
+                #tn_total_list.append(tn)
+                #print tp,fp,fn,tn
+                precision.append(compute_precision(tp,fp))
+                #print 'precision',precision
+                #print len(precision)
+                recall.append(compute_recall(tp,fn))
+                #print 'recall',recall
+                #print len(recall)
+                #f1 = compute_f1(precision,recall)
+                #print 'f1',f1
+
             print 'precision',precision
-            recall = compute_recall(tp,fn)
             print 'recall',recall
-            f1 = compute_f1(precision,recall)
-            print 'f1',f1
 
-        tp_total = sum(tp_total_list)
-        fp_total = sum(fp_total_list)
-        fn_total = sum(fn_total_list)
-        tn_total = sum(tn_total_list)
+            plt.plot(precision,recall)
+            plt.xlabel('Precision')
+            plt.ylabel('Recall')
+            plt.title("Precision-Recall graph for query '"+str(query.query)+"'")
+            plt.savefig("../graphs/"+str(query.query).replace(' ','_')+".png", bbox_inches='tight')
+            plt.close()
+            
 
-        print
-        print
-        print 'total:',tp_total,fp_total,fn_total,tn_total
 
-        precision_total = compute_precision(tp_total,fp_total)
-        print 'precision total:',precision_total
-        recall_total = compute_recall(tp_total,fn_total)
-        print 'recall total:',recall_total
+        #tp_total = sum(tp_total_list)
+        #fp_total = sum(fp_total_list)
+        #fn_total = sum(fn_total_list)
+        #tn_total = sum(tn_total_list)
 
-        f1_total = compute_f1(precision_total,recall_total)
-        print 'f1 total:',f1_total
+        #print
+        #print
+        #print 'total:',tp_total,fp_total,fn_total,tn_total
+
+        #precision_total = compute_precision(tp_total,fp_total)
+        #print 'precision total:',precision_total
+        #recall_total = compute_recall(tp_total,fn_total)
+        #print 'recall total:',recall_total
+
+        #f1_total = compute_f1(precision_total,recall_total)
+        #print 'f1 total:',f1_total
 
 
     def _create_terms(self):
@@ -216,6 +267,8 @@ class InvertedIndex(object):
 
             for term in terms.terms:
 
+                print "Update postingslist for term "+str(term)
+
                 if term in self.inv_index:
 
                     self.inv_index[term]._update_postingslist(name)
@@ -237,7 +290,7 @@ class InvertedIndex(object):
 
                 pickle.dump(self.inv_index, fp)
 
-            print "\nStored inverted index into " + str(filename) + ".pkl\n\n"
+            print "\nStored inverted index into " + str(filename) + ".pkl\n"
 
 
     # create terms on hard disk
@@ -260,6 +313,8 @@ def get_user_args(args):
                     help='activate this flag if you want to store the inverted index into a pickle file')
     ap.add_argument('-p', '--pickle', action='store_true',
                     help='activate this flag if you wish to read the inverted index from a stored pickle file')
+    ap.add_argument('-i', '--interactive', action='store_true',
+                    help='activate this flag if you want to enter interactive mode')
     ap.add_argument('--version', action='version', version=__version__)
 
     return ap.parse_args(args)
