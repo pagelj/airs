@@ -274,18 +274,20 @@ class InvertedIndex(object):
         filename_terms='terms'
         filename_docs='docs'
         path='../'
+
+        if self.userargs.store:
         
-        with open(path.strip()+filename_terms.strip()+'.pkl','wb') as fp:
+            with open(path.strip()+filename_terms.strip()+'.pkl','wb') as fp:
 
-            pickle.dump(self.terms, fp)
+                pickle.dump(self.terms, fp)
 
-        print "\nStored terms into " + str(filename_terms) + ".pkl\n"
+            print "\nStored terms into " + str(filename_terms) + ".pkl\n"
 
-        with open(path.strip()+filename_docs.strip()+'.pkl','wb') as fp:
+            with open(path.strip()+filename_docs.strip()+'.pkl','wb') as fp:
 
-            pickle.dump(self.docs, fp)
+                pickle.dump(self.docs, fp)
 
-        print "\nStored documents into " + str(filename_docs) + ".pkl\n"
+            print "\nStored documents into " + str(filename_docs) + ".pkl\n"
 
     def _create_inv_index(self):
 
@@ -309,14 +311,16 @@ class InvertedIndex(object):
                     self.inv_index[term]=postingslist
                     #print (term,self.inv_index[term].postingslist)
 
-        filename='inverted_index'
-        path='../'
+        if self.userargs.store:
+                    
+            filename='inverted_index'
+            path='../'
 
-        with open(path.strip()+filename.strip()+'.pkl','wb') as fp:
+            with open(path.strip()+filename.strip()+'.pkl','wb') as fp:
 
-            pickle.dump(self.inv_index, fp)
+                pickle.dump(self.inv_index, fp)
 
-        print "\nStored inverted index into " + str(filename) + ".pkl\n"
+            print "\nStored inverted index into " + str(filename) + ".pkl\n"
 
 
     # create terms on hard disk
