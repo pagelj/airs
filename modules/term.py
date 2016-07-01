@@ -64,57 +64,9 @@ class Term(object):
     def __init__(self,tokens):
 
         self.tokens = tokens.tokenized
-        self.terms = self.terminator(self.tokens)
+        self.terms = set(terminator(self.tokens))
         self.tf = self.compute_tf(self.tokens,self.terms)
 
-
-    #def __str__(self):
-
-    #    return str(self.terms)
-
-
-    def terminator(self,tokens):
-
-        terms = set([x.lower() for x in tokens])
-        newterms = []
-
-        for term in terms:
-
-            if re.match(special_char,term):
-
-                continue
-
-            # lemmatize clitics
-
-            elif term == 'an':
-
-                newterms.append(stem('a'))
-
-            elif term == "'m":
-
-                newterms.append(stem('am'))
-
-            elif term == "'re":
-
-                newterms.append(stem('are'))
-
-            elif term == "'d":
-
-                newterms.append(stem('would'))
-
-            elif term == "'ll":
-
-                newterms.append(stem('will'))
-
-            elif term == "'t" or term == "'nt":
-
-                newterms.append(stem('not'))
-
-            else:
-
-                newterms.append(stem(term))
-
-        return set(newterms)
 
     def compute_tf(self, tokens, terms):
 
@@ -140,6 +92,49 @@ class Term(object):
 
         return tf_values
 
+def terminator(tokens):
+
+    terms = [x.lower() for x in tokens]
+    newterms = []
+
+    for term in terms:
+
+        if re.match(special_char,term):
+
+            continue
+
+        # lemmatize clitics
+
+        elif term == 'an':
+
+            newterms.append(stem('a'))
+
+        elif term == "'m":
+
+            newterms.append(stem('am'))
+
+        elif term == "'re":
+
+            newterms.append(stem('are'))
+
+        elif term == "'d":
+
+            newterms.append(stem('would'))
+
+        elif term == "'ll":
+
+            newterms.append(stem('will'))
+
+        elif term == "'t" or term == "'nt":
+
+            newterms.append(stem('not'))
+
+        else:
+
+            newterms.append(stem(term))
+
+    return newterms
+    
 ###########################################################
 ####################### Testing ###########################
 ###########################################################

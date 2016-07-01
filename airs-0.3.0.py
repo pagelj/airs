@@ -56,47 +56,43 @@ class InvertedIndex(object):
 
         self.userargs = userargs
 
-        self.corpus_path = userargs.corpus
-        self.random_number = userargs.random
-        self.pickle_file_boolean = userargs.pickle
-        self.interactive = userargs.interactive
-
-        # get the texts
-
-        print "\nReading in the corpus\n"
-
-        parsedoc_obj = Parsedoc(os.path.expanduser(self.corpus_path), self.random_number)
-        texts_obj,file_name = parsedoc_obj.content,parsedoc_obj.docid
-
-        self.doc_obj={}
-        self.doc_obj=dict(zip(file_name,texts_obj))
-
-        print "\nReading in of corpus finished\n"
-
 
         # Store the inverted index into a pickle file
         # if requested by the user
-        if self.pickle_file_boolean:
+        if self.userargs.pickle:
 
-            with open('../terms.pkl','rb') as fp:
+            with open('terms.pkl','rb') as fp:
 
                 print "\nRead terms from terms.pkl\n"
 
                 self.terms = pickle.load(fp)
 
-            with open('../docs.pkl','rb') as fp:
+            with open('docs.pkl','rb') as fp:
 
                 print "\nRead documents from docs.pkl\n"
 
                 self.docs = pickle.load(fp)
 
-            with open('../inverted_index.pkl','rb') as fp:
+            with open('inverted_index.pkl','rb') as fp:
 
                 print "\nRead inverted index from inverted_index.pkl\n"
 
                 self.inv_index = pickle.load(fp)
 
         else:
+
+            # get the texts
+
+            print "\nReading in the corpus\n"
+
+            parsedoc_obj = Parsedoc(os.path.expanduser(self.userargs.corpus), self.userargs.random)
+            texts_obj,file_name = parsedoc_obj.content,parsedoc_obj.docid
+
+            self.doc_obj={}
+            self.doc_obj=dict(zip(file_name,texts_obj))
+
+            print "\nReading in of corpus finished\n"
+
 
             print "\nCreate terms\n"
         
@@ -114,7 +110,7 @@ class InvertedIndex(object):
         # Run interactive query if set by
         # user, else run ranking on given queries from
         # the gold standard
-        if self.interactive:
+        if self.userargs.interactive:
             
             self.interactive_query()
 
@@ -164,7 +160,7 @@ class InvertedIndex(object):
                 evaluation=Evaluation(ranking)
             """
 
-            ranking=Ranking(query,self.inv_index,self.docs,self.random_number)
+            ranking=Ranking(query,self.inv_index,self.docs,self.userargs.random)
             evaluation=Evaluation(ranking)
 
             userinput = str(raw_input('\n\nWould you like to continue? Type "no" or "n" to quit the program.\n\n'))
@@ -181,7 +177,7 @@ class InvertedIndex(object):
         precision_total = 0
         recall_total = 0
         f1_total = 0
-        golddata = read_golddata('../golddata.txt')
+        golddata = read_golddata('golddata.txt')
         queries = golddata.keys()
         query_list=[]
 
@@ -196,7 +192,7 @@ class InvertedIndex(object):
             recall = []
 
             #print query.query
-            ranking=Ranking(query,self.inv_index,self.docs,self.random_number)
+            ranking=Ranking(query,self.inv_index,self.docs,self.userargs.random)
             gold_docs = golddata[query.query]
             #print 'gold\n', gold_docs
 
@@ -230,9 +226,9 @@ class InvertedIndex(object):
             #print 'precision',precision
             #print 'recall',recall
 
-            plt.plot(precision,recall)
-            plt.xlabel('Precision')
-            plt.ylabel('Recall')
+            plt.plot(recall,precision)
+            plt.xlabel('Recall')
+            plt.ylabel('Precision')
             plt.title("Precision-Recall graph for query '"+str(query.query)+"'")
             plt.savefig("../graphs/"+str(query.query).replace(' ','_')+".png", bbox_inches='tight')
             plt.close()
@@ -297,19 +293,23 @@ class InvertedIndex(object):
 
             for term in terms.terms:
 
-                print "Update postingslist for term "+str(term)
+                #print "Updating postingslist for term "+str(term)
 
                 if term in self.inv_index:
 
                     self.inv_index[term]._update_postingslist(name)
+                    self.inv_index[term]._gettf(name,self.docs)
                     #print (term,self.inv_index[term])
 
                 else:
 
-                    postingslist = Postingslist(term)
+                    postingslist = Postingslist(term,self.docs)
                     postingslist._update_postingslist(name)
                     self.inv_index[term]=postingslist
+                    self.inv_index[term]._gettf(name,self.docs)
                     #print (term,self.inv_index[term].postingslist)
+
+        
 
         if self.userargs.store:
                     

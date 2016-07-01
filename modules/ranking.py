@@ -1,4 +1,4 @@
-from term import *
+import term
 import pandas as pd
 from postingslist import *
 import math
@@ -91,27 +91,29 @@ class Ranking(object):
         return tf*idf
 
 
-    def tfidf_doc(self,term,coll):
+    def tfidf_doc(self,current_term,coll):
 
         #print "\nTerm2\n",term
         #print "\nIn Doc\n"
-        doc_content = self.docs[coll].tokens.tokenized
+       
+            
+        #print "\nTerm5\n",term
+        #print "\nNumerator\n",doc_content.count(term)
 
-        if term not in doc_content:
-            #print "\n Am in you\n"
+        tf_list = self.inv_index[current_term].tf
+
+        if coll not in tf_list:
+
             return 0
+
         else:
             
-            #print "\nTerm5\n",term
-            #print "\nNumerator\n",doc_content.count(term)
-
-            
-            tf = 1+math.log(float(doc_content.count(term)),10)
+            tf = tf_list[coll]
             
             #print 'doc tf',tf
             #print "\nIDF Documents\n",self.inv_index[term].postingslist_len
             
-            idf = math.log((float(self.corpussize)/self.inv_index[term].postingslist_len),10)
+            idf = math.log((float(self.corpussize)/self.inv_index[current_term].postingslist_len),10)
             
             #print 'doc idf',idf
             #print self.docs[coll].tokens
