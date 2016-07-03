@@ -36,18 +36,19 @@ class Postingslist(object):
         self.docs = docs
         self.term_id = term_id
         self.postingslist = []
+        self.tf = {}
         self.postingslist_len = len(self.postingslist)
 
-    #def __str__(self):
+    def __str__(self):
 
-    #    return str(self.postingslist)
+        return str(self.postingslist)
 
     def _update_postingslist(self, doc_id):
 
         if isinstance(doc_id, basestring):
 
             self.postingslist.append(doc_id)
-            
+
             self.postingslist = sorted(list(set(self.postingslist)), key=natural_sortkey)
 
             self.postingslist_len = len(self.postingslist)
@@ -55,7 +56,7 @@ class Postingslist(object):
         else:
 
             self.postingslist.extend(doc_id)
-            
+
             self.postingslist = sorted(list(set(self.postingslist)), key=natural_sortkey)
 
             self.postingslist_len = len(self.postingslist)
@@ -66,14 +67,10 @@ class Postingslist(object):
 
     def _gettf(self, doc_id, docs):
 
-        self.tf = {}
-        
-
         doc_content = term.terminator(docs[doc_id].tokens.tokenized)
 
-
         if self.term_id not in doc_content:
-            
+
             tf_value = 0
 
         else:
@@ -82,7 +79,7 @@ class Postingslist(object):
 
         self.tf[doc_id] = tf_value
 
-        
+
 
 ###########################################################
 ####################### Testing ###########################

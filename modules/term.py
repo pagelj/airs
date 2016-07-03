@@ -65,32 +65,6 @@ class Term(object):
 
         self.tokens = tokens.tokenized
         self.terms = set(terminator(self.tokens))
-        self.tf = self.compute_tf(self.tokens,self.terms)
-
-
-    def compute_tf(self, tokens, terms):
-
-        tf_values = {}
-
-        for term in terms:
-
-            for token in tokens:
-
-                if term == token:
-
-                    if term in tf_values:
-
-                        tf_values[term] += 1
-
-                    else:
-
-                        tf_values[term] = 1
-
-        for term in tf_values:
-
-            tf_values[term] = 1 + math.log10(tf_values[term])
-
-        return tf_values
 
 def terminator(tokens):
 
@@ -99,13 +73,13 @@ def terminator(tokens):
 
     for term in terms:
 
-        if re.match(special_char,term):
+        #if re.match(special_char,term):
 
-            continue
+        #    continue
 
         # lemmatize clitics
 
-        elif term == 'an':
+        if term == 'an':
 
             newterms.append(stem('a'))
 
@@ -134,7 +108,7 @@ def terminator(tokens):
             newterms.append(stem(term))
 
     return newterms
-    
+
 ###########################################################
 ####################### Testing ###########################
 ###########################################################

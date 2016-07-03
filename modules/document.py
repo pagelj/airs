@@ -16,6 +16,7 @@ Summer Term 16
 #from modules.parsedoc import *
 from tokenizer import *
 from query import *
+from term import *
 
 class Document(object):
 
@@ -35,6 +36,7 @@ class Document(object):
 
     def snippet(doc, query):
 
+        terms = terminator(doc.tokens.tokenized)
         tokens = doc.tokens.tokenized
         query = query.query
         snippet = []
@@ -43,21 +45,31 @@ class Document(object):
 
             for word in query:
 
-                if tokens[token_id] == word:
+                if terms[token_id] == word:
 
                     try:
 
+                        snippet.append(tokens[token_id-10])
+                        snippet.append(tokens[token_id-9])
+                        snippet.append(tokens[token_id-8])
+                        snippet.append(tokens[token_id-7])
+                        snippet.append(tokens[token_id-6])
                         snippet.append(tokens[token_id-5])
                         snippet.append(tokens[token_id-4])
                         snippet.append(tokens[token_id-3])
                         snippet.append(tokens[token_id-2])
                         snippet.append(tokens[token_id-1])
-                        snippet.append('>>>'+tokens[token_id]+'<<<')
+                        snippet.append('\033[1m'+tokens[token_id]+'\033[0m')
                         snippet.append(tokens[token_id+1])
                         snippet.append(tokens[token_id+2])
                         snippet.append(tokens[token_id+3])
                         snippet.append(tokens[token_id+4])
                         snippet.append(tokens[token_id+5])
+                        snippet.append(tokens[token_id+6])
+                        snippet.append(tokens[token_id+7])
+                        snippet.append(tokens[token_id+8])
+                        snippet.append(tokens[token_id+9])
+                        snippet.append(tokens[token_id+10])
                         snippet.append('\n\n')
 
                     except IndexError:

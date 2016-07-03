@@ -6,6 +6,7 @@ Created on Thu Jun  9 15:09:40 2016
 """
 
 from ranking import *
+from query import *
 import pandas as pd
 import random as rd
 
@@ -171,12 +172,12 @@ class Evaluation(object):
         files.extend(filesamplemid)
         files.extend(filesamplehigh)
         print sorted(files,key=natural_sortkey)
-        
+
 
 
 
     def evaluation(self):
-        
+
 
         low=self.ranking[self.ranking.Cosine_Similarity<self.describe[4]]
 #        print "\nOld Low\n",low
@@ -217,7 +218,7 @@ class Evaluation(object):
         scores.extend(scorehigh)
 #        print sorted(files,key=natural_sortkey)
 #        print scores
-        
+
         nullme={}
         response=""
         i=0
@@ -239,7 +240,7 @@ class Evaluation(object):
         querydf=pd.DataFrame(querylist,columns=['Query'])
         evaluation=pd.concat([querydf,filedf,valuedf],axis=1)
         print evaluation
-        
+
         return evaluation
 
 ###########################################################

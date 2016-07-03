@@ -61,23 +61,37 @@ class InvertedIndex(object):
         # if requested by the user
         if self.userargs.pickle:
 
-            with open('terms.pkl','rb') as fp:
+            try:
 
-                print "\nRead terms from terms.pkl\n"
+                with open('docs.pkl','rb') as fp:
 
-                self.terms = pickle.load(fp)
+                    print "\nRead documents from docs.pkl\n"
 
-            with open('docs.pkl','rb') as fp:
+                    self.docs = pickle.load(fp)
 
-                print "\nRead documents from docs.pkl\n"
+            except IOError:
 
-                self.docs = pickle.load(fp)
+                with open('../docs.pkl','rb') as fp:
 
-            with open('inverted_index.pkl','rb') as fp:
+                    print "\nRead documents from docs.pkl\n"
 
-                print "\nRead inverted index from inverted_index.pkl\n"
+                    self.docs = pickle.load(fp)
 
-                self.inv_index = pickle.load(fp)
+            try:
+
+                with open('inverted_index.pkl','rb') as fp:
+
+                    print "\nRead inverted index from inverted_index.pkl\n"
+
+                    self.inv_index = pickle.load(fp)
+
+            except IOError:
+
+                with open('../inverted_index.pkl','rb') as fp:
+
+                    print "\nRead inverted index from inverted_index.pkl\n"
+
+                    self.inv_index = pickle.load(fp)
 
         else:
 
@@ -95,13 +109,13 @@ class InvertedIndex(object):
 
 
             print "\nCreate terms\n"
-        
+
             self._create_terms()
 
             print "\nTerms created\n"
 
             print "\nStart creating the inverted index\n"
-            
+
             self._create_inv_index()
 
             print "\nInverted index created\n"
@@ -111,14 +125,14 @@ class InvertedIndex(object):
         # user, else run ranking on given queries from
         # the gold standard
         if self.userargs.interactive:
-            
+
             self.interactive_query()
 
         else:
 
-            
+
             print "\nStart ranking of documents\n"
-            
+
             self.eval_ranking()
 
             print "\nRanking of documents finished\n"
@@ -129,6 +143,8 @@ class InvertedIndex(object):
 
 
     def interactive_query(self):
+
+        top_rank = 5
 
         while 1:
 
@@ -147,25 +163,22 @@ class InvertedIndex(object):
                 print '\nYour queried word(s) occur in the following document(s):'
                 print
 
-                for doc_id in intersection.postingslist:
+                ranking=Ranking(query,self.inv_index,self.userargs.random)
+
+                for doc_id in ranking.ranking.index[:top_rank]:
 
                     print
                     print doc_id
                     print Document.snippet(self.docs[doc_id],query)
 
-            """
-            if intersection.postingslist != []:
-
-                ranking=Ranking(query,self.inv_index,self.docs,random_number)
-                evaluation=Evaluation(ranking)
-            """
-
-            ranking=Ranking(query,self.inv_index,self.docs,self.userargs.random)
-            evaluation=Evaluation(ranking)
-
-            userinput = str(raw_input('\n\nWould you like to continue? Type "no" or "n" to quit the program.\n\n'))
+            userinput = str(raw_input('\n\nIf you would like to continue type "yes" or "y".\nType "no" or "n" to quit the program.\n\n'))
             if userinput in ("no","n"):
                 sys.exit("\nProgram quiting\n")
+            elif userinput in ("yes","y"):
+                continue
+            else:
+                print '\nError: Could not recognize input.\nPlease type "yes" or "y" if you wish to continue and "no" or "n" if you wish to quit the program.\n'
+                continue
 
 
     def eval_ranking(self):
@@ -174,11 +187,18 @@ class InvertedIndex(object):
         fp_total_list = []
         fn_total_list = []
         tn_total_list = []
-        precision_total = 0
-        recall_total = 0
-        f1_total = 0
-        golddata = read_golddata('golddata.txt')
+        precision_total = []
+
+        try:
+
+            golddata = read_golddata('golddata.txt')
+
+        except IOError:
+
+            golddata = read_golddata('../golddata.txt')
+
         queries = golddata.keys()
+
         query_list=[]
 
         for query in queries:
@@ -188,69 +208,201 @@ class InvertedIndex(object):
 
         for query in query_list:
 
+            print '\nQuery: '+str(query.userinput)+'\n'
+
             precision = []
+            eleven_prec = []
             recall = []
 
-            #print query.query
-            ranking=Ranking(query,self.inv_index,self.docs,self.userargs.random)
-            gold_docs = golddata[query.query]
-            #print 'gold\n', gold_docs
+            ranking=Ranking(query,self.inv_index,self.userargs.random)
 
-            #print ranking.ranking.index
+            print ranking.ranking
+            print '\n'
+
+            gold_docs = golddata[query.userinput]
+
 
             for i in range(1,len(ranking.ranking),1):
 
                 prediction = []
-            
+
                 for index in ranking.ranking[:i].index:
 
                     prediction.append(index)
 
-                #print 'prediction\n',prediction
 
                 tp,fp,fn,tn = confusion_matrix(gold_docs,prediction)
-                #tp_total_list.append(tp)
-                #fp_total_list.append(fp)
-                #fn_total_list.append(fn)
-                #tn_total_list.append(tn)
-                #print tp,fp,fn,tn
+
                 precision.append(compute_precision(tp,fp))
-                #print 'precision',precision
-                #print len(precision)
+
                 recall.append(compute_recall(tp,fn))
-                #print 'recall',recall
-                #print len(recall)
-                #f1 = compute_f1(precision,recall)
-                #print 'f1',f1
 
-            #print 'precision',precision
-            #print 'recall',recall
+            for index in range(len(recall)):
 
-            plt.plot(recall,precision)
+                if recall[index] == 0.0:
+
+                    eleven_prec.append((0.0,precision[index]))
+
+                    break
+
+            for index in range(len(recall)):
+
+                if recall[index] <= 0.1:
+
+                    eleven_prec.append((0.1,precision[index]))
+
+                    break
+
+            for index in range(len(recall)):
+
+                if recall[index] > 0.1 and recall[index] <= 0.2:
+
+                    eleven_prec.append((0.2,precision[index]))
+
+                    break
+
+            for index in range(len(recall)):
+
+                if recall[index] > 0.2 and recall[index] <= 0.3:
+
+                    eleven_prec.append((0.3,precision[index]))
+
+                    break
+
+            for index in range(len(recall)):
+
+                if recall[index] > 0.3 and recall[index] <= 0.4:
+
+                    eleven_prec.append((0.4,precision[index]))
+
+                    break
+
+            for index in range(len(recall)):
+
+                if recall[index] > 0.4 and recall[index] <= 0.5:
+
+                    eleven_prec.append((0.5,precision[index]))
+
+                    break
+
+            for index in range(len(recall)):
+
+                if recall[index] > 0.5 and recall[index] <= 0.6:
+
+                    eleven_prec.append((0.6,precision[index]))
+
+                    break
+
+            for index in range(len(recall)):
+
+                if recall[index] > 0.6 and recall[index] <= 0.7:
+
+                    eleven_prec.append((0.7,precision[index]))
+
+                    break
+
+            for index in range(len(recall)):
+
+                if recall[index] > 0.8 and recall[index] <= 0.9:
+
+                    eleven_prec.append((0.8,precision[index]))
+
+                    break
+
+            for index in range(len(recall)):
+
+                if recall[index] > 0.9 and recall[index] < 1.0:
+
+                    eleven_prec.append((0.9,precision[index]))
+
+                    break
+
+            for index in range(len(recall)):
+
+                if recall[index] == 1.0:
+
+                    eleven_prec.append((1.0,precision[index]))
+
+                    break
+
+            rec_tmp = []
+            prec = []
+
+            for tupel in eleven_prec:
+
+                rec_tmp = tupel[0]
+                prec_tmp = tupel[1]
+
+            plt.plot(recall,precision,'b-')
+            plt.plot(rec_tmp,prec_tmp,'r-')
             plt.xlabel('Recall')
             plt.ylabel('Precision')
-            plt.title("Precision-Recall graph for query '"+str(query.query)+"'")
-            plt.savefig("../graphs/"+str(query.query).replace(' ','_')+".png", bbox_inches='tight')
+            plt.title("Precision-Recall graph for query '"+str(query.userinput)+"'")
+
+            try:
+
+                plt.savefig("../graphs/"+str(query.userinput).replace(' ','_')+".png", bbox_inches='tight')
+
+            except IOError:
+
+                plt.savefig("graphs/"+str(query.userinput).replace(' ','_')+".png", bbox_inches='tight')
+
             plt.close()
-            
+
+            print '11-point-precision'
+            for rec,prec in eleven_prec:
+                print rec,'\t',prec
+            print '\n'
+
+            precision_total.append(eleven_prec)
+
+        precision_average = {}
+
+        for pres in precision_total:
+
+            for tupel in pres:
+
+                if tupel[0] in precision_average:
+
+                    precision_average[tupel[0]].append(tupel[1])
+
+                else:
+
+                    precision_average[tupel[0]] = [tupel[1]]
+
+        for rec in precision_average:
+
+            precision_average[rec] = float(sum(precision_average[rec]))/len(precision_average[rec])
+
+        prec_tmp = []
+        rec_tmp = []
+
+        for rec in sorted(precision_average.keys()):
+
+            rec_tmp.append(rec)
+            prec_tmp.append(precision_average[rec])
+
+        plt.plot(rec_tmp,prec_tmp,'b-')
+        plt.xlabel('Recall')
+        plt.ylabel('Precision')
+        plt.title("Precision-Recall graph")
+
+        try:
+
+            plt.savefig("../graphs/total.png", bbox_inches='tight')
+
+        except IOError:
+
+            plt.savefig("graphs/total.png", bbox_inches='tight')
+
+        plt.close()
+
+        print 'System 11-point-precision'
+        for rec in sorted(precision_average.keys()):
+            print rec,'\t',precision_average[rec]
+        print '\n'
 
 
-        #tp_total = sum(tp_total_list)
-        #fp_total = sum(fp_total_list)
-        #fn_total = sum(fn_total_list)
-        #tn_total = sum(tn_total_list)
-
-        #print
-        #print
-        #print 'total:',tp_total,fp_total,fn_total,tn_total
-
-        #precision_total = compute_precision(tp_total,fp_total)
-        #print 'precision total:',precision_total
-        #recall_total = compute_recall(tp_total,fn_total)
-        #print 'recall total:',recall_total
-
-        #f1_total = compute_f1(precision_total,recall_total)
-        #print 'f1 total:',f1_total
 
 
     def _create_terms(self):
@@ -272,7 +424,7 @@ class InvertedIndex(object):
         path='../'
 
         if self.userargs.store:
-        
+
             with open(path.strip()+filename_terms.strip()+'.pkl','wb') as fp:
 
                 pickle.dump(self.terms, fp)
@@ -305,14 +457,14 @@ class InvertedIndex(object):
 
                     postingslist = Postingslist(term,self.docs)
                     postingslist._update_postingslist(name)
+                    postingslist._gettf(name,self.docs)
                     self.inv_index[term]=postingslist
-                    self.inv_index[term]._gettf(name,self.docs)
                     #print (term,self.inv_index[term].postingslist)
 
-        
+
 
         if self.userargs.store:
-                    
+
             filename='inverted_index'
             path='../'
 

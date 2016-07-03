@@ -5,119 +5,107 @@ import math
 
 class Ranking(object):
 
-    def __init__(self,query,inv_index,docs,corpussize):
+    def __init__(self,query,inv_index,corpussize):
 
-        self.query=query.query
+        self.query=query
         self.corpussize=corpussize
         self.inv_index=inv_index
-        self.docs=docs
-        # print self.inv_index
         self.ranking=self.cosinesimilarity(self.query,self.inv_index)
-        #print self.ranking
         self.ranking.to_csv('../ranking.csv')
 
     def cosinesimilarity(self,query,inv_index):
-        #print "\nInverted Index\n",inv_index
+
+        # Fill two dictionaries scores and magnitude.
+        # Each dictionary contains information to Numerator
+        # and denominator for a cosine similarity calculation
+        # for each 'relevant' document. 'Relevant' documents
+        # are all documents out of the postingslists of query terms.
         scores={}
         magnitude={}
-        terms=[]
-        #print "\nQuery\n",query
-        #print "\nTerms\n",inv_index.keys()
-        for term in query.split():
-            #print "\nTerm1\n",term
-            if term not in terms:
-                terms.append(term)
-                if term in inv_index:
-                    pl=inv_index[term]
-                    postlist=pl.postingslist
-                    #print "\nPostings List\n",postlist
-                    for doc in postlist:
-                        #print "\nDocument\n",doc
-                        if doc in scores:
-                            #print "\nDocument 1\n",doc
-                            scores[doc]+=self.tfidf_query(term,query)*self.tfidf_doc(term,doc)
-                        # print scores
-                        else:
-                            #print "\nDocument 2\n",doc
-                            scores[doc]=self.tfidf_query(term,query)*self.tfidf_doc(term,doc)
-                            # print scores
+
+        # For every term in the query
+        for term in query.query:
+
+            # If the term is not in the index, its
+            # contribution to the tf-idf values is zero.
+            # Therefor continue with the next term.
+            if term in inv_index:
+
+                # Get the postingslist of the term.
+                postlist = inv_index[term]
+
+                # For every document in the postingslist of the query term:
+                for doc in postlist.postingslist:
+
+                    # Get the tf-idf values and sum them up for each document.
+                    if doc in scores:
+
+                        scores[doc] += self.tfidf_query(term,postlist,query)*self.tfidf_doc(postlist,doc)
+
+                    else:
+
+                        scores[doc] = self.tfidf_query(term,postlist,query)*self.tfidf_doc(postlist,doc)
+
+
 
             else:
+
                 continue
-        # print scores
-        #print "\nDoneso\n"
+
+        # Saves the scores for the documents in a data frame.
         scoresrep=pd.DataFrame(scores.values(),index=scores.keys(),columns=['Numerator'])
-        # print scoresrep
+
+        # For every term in the index, calculate
+        # the denominator.
         for term in inv_index.keys():
-            #print "\nTerm6\n",term
+
+            # Get the postingslist.
+            postlist = self.inv_index[term]
+
+            # Calculate the value only for documents
+            # of the postingslist which are in scores.
+
             for doc in scores.keys():
-                #print "\nDocument3\n",doc
-                if doc in magnitude:
-                    magnitude[doc]+= self.tfidf_doc(term,doc)**2
-                else:
-                    magnitude[doc]= self.tfidf_doc(term,doc)**2
-        # print magnitude
+
+                if doc in postlist.postingslist:
+
+                    if doc in magnitude:
+
+                        magnitude[doc] += self.tfidf_doc(postlist,doc)**2
+
+                    else:
+
+                        magnitude[doc] = self.tfidf_doc(postlist,doc)**2
+
         magrep=pd.DataFrame(magnitude.values(),index=scores.keys(),columns=['Denominator'])
-        # print magrep
+
         cosinesimilarity=pd.concat([scoresrep,magrep],axis=1)
         cosinesimilarity['Cosine_Similarity']=cosinesimilarity['Numerator']/(cosinesimilarity['Denominator'])**0.5
-        #print cosinesimilarity
+
         sortedcosine=cosinesimilarity.sort(['Cosine_Similarity'],ascending=False)
-        print query
-        print sortedcosine
-        print '\n'
 
         return sortedcosine
 
 
-    def tfidf_query(self,term,coll):
+    def tfidf_query(self,term,postlist,query):
 
-        #print "\nIn Query\n"
-        #print "\nTerm3\n",term
-        #print "\nNumerator\n",coll.count(term)
-        
-        tf = 1+math.log(float(coll.count(term)),10)
-        
-        #print 'query tf',tf
-        #print "\nIDF Documents\n",self.inv_index[term].postingslist_len
-        
-        idf = math.log((float(self.corpussize)/self.inv_index[term].postingslist_len),10)
-        
-        #print "\nTerm4\n",term
-        #print 'query idf',idf
-        #print "\nQuery TF-IDF\n",tf*idf
-        
-        
+        # Compute tf-idf for a term and a given query.
+
+        tf = 1+math.log(float(query.query.count(term)),10)
+
+        idf = math.log((float(self.corpussize)/postlist.postingslist_len),10)
+
         return tf*idf
 
 
-    def tfidf_doc(self,current_term,coll):
+    def tfidf_doc(self,postlist,doc):
 
-        #print "\nTerm2\n",term
-        #print "\nIn Doc\n"
-       
-            
-        #print "\nTerm5\n",term
-        #print "\nNumerator\n",doc_content.count(term)
+        # Compute tf-idf for a term and a given document.
 
-        tf_list = self.inv_index[current_term].tf
+        tf_list = postlist.tf
 
-        if coll not in tf_list:
+        tf = tf_list[doc]
 
-            return 0
+        idf = math.log((float(self.corpussize)/postlist.postingslist_len),10)
 
-        else:
-            
-            tf = tf_list[coll]
-            
-            #print 'doc tf',tf
-            #print "\nIDF Documents\n",self.inv_index[term].postingslist_len
-            
-            idf = math.log((float(self.corpussize)/self.inv_index[current_term].postingslist_len),10)
-            
-            #print 'doc idf',idf
-            #print self.docs[coll].tokens
-            #print self.docs[coll]
-            #print "\nDoc TF-IDF\n",tf*idf
-            
-            return tf*idf
+        return tf*idf
