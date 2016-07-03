@@ -35,6 +35,15 @@ for list in gold_tupels:
         gold_docs.append(int(tupel[0].rstrip('.txt')))
 
 
+def natural_sortkey(string):
+
+    # Function for sorting integer parts of
+    # a string
+
+    tokenize = re.compile(r'(\d+)|(\D+)').findall
+    return tuple(int(num) if num else alpha for num, alpha in tokenize(string))
+
+
 class Parsedoc(object):
 
     """
@@ -42,14 +51,14 @@ class Parsedoc(object):
     the file content and file id
     """
 
-    def __init__(self, directory, random_number):
-
+    def __init__(self, directory, userargs):
+        
         # Store the directory
         self.directory = directory
         # Store the output of filereader as the content and the docid
-        self.content, self.docid = self.filereader(self.directory, random_number)
+        self.content, self.docid = self.filereader(self.directory, userargs)
 
-    def filereader(self, directory, random_number):
+    def filereader(self, directory, userargs):
 
         r.seed(20)
         # store is a list to hold the file contents
@@ -62,23 +71,35 @@ class Parsedoc(object):
         for dirpath, dirs, files in os.walk('.'):
             pass
 
+
+        files = sorted(files, key=natural_sortkey)
         #choices will store the random N files we will use in the experiment
-        if random_number == 'all':
+        if userargs.random:
+        
+            if userargs.random == 'all':
 
-            N = len(files)
+                N = len(files)
 
-        else:
+            else:
 
-            N = int(random_number)
+                N = int(userargs.random)
 
-        choices=r.sample(xrange(len(files)),N)
-        #choices=gold_docs
+            choices=r.sample(xrange(len(files)),N)
+            #choices=gold_docs
 
-        for x in choices:
-            with open(files[x]) as inp_data:
-                tempstore=inp_data.read()
-                store.append(tempstore)
-                names.append(files[x])
+            for x in choices:
+                with open(files[x]) as inp_data:
+                    tempstore=inp_data.read()
+                    store.append(tempstore)
+                    names.append(files[x])
+
+        if userargs.ranking:
+
+            for i in xrange(int(userargs.ranking)):
+                with open(files[i]) as inp_data:
+                    tempstore=inp_data.read()
+                    store.append(tempstore)
+                    names.append(files[i])
 
         return store,names
 

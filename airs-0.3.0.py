@@ -56,6 +56,14 @@ class InvertedIndex(object):
 
         self.userargs = userargs
 
+        if userargs.random:
+
+            self.corpussize = int(self.userargs.random)
+
+        if userargs.ranking:
+
+            self.corpussize = int(self.userargs.ranking)
+
 
         # Store the inverted index into a pickle file
         # if requested by the user
@@ -99,7 +107,7 @@ class InvertedIndex(object):
 
             print "\nReading in the corpus\n"
 
-            parsedoc_obj = Parsedoc(os.path.expanduser(self.userargs.corpus), self.userargs.random)
+            parsedoc_obj = Parsedoc(os.path.expanduser(self.userargs.corpus), self.userargs)
             texts_obj,file_name = parsedoc_obj.content,parsedoc_obj.docid
 
             self.doc_obj={}
@@ -142,6 +150,7 @@ class InvertedIndex(object):
 
 
 
+
     def interactive_query(self):
 
         top_rank = 5
@@ -150,7 +159,7 @@ class InvertedIndex(object):
 
             query = Query('','interactive')
 
-            postingslists = query.return_postingslist(query.query, self.inv_index)
+            postingslists = query.return_postingslist(query.terms, self.inv_index)
 
             intersection = query.logical_and(postingslists)
 
@@ -163,7 +172,7 @@ class InvertedIndex(object):
                 print '\nYour queried word(s) occur in the following document(s):'
                 print
 
-                ranking=Ranking(query,self.inv_index,self.userargs.random)
+                ranking=Ranking(query,self.inv_index,self.corpussize)
 
                 for doc_id in ranking.ranking.index[:top_rank]:
 
@@ -187,6 +196,7 @@ class InvertedIndex(object):
         fp_total_list = []
         fn_total_list = []
         tn_total_list = []
+        spec_total_list=[]
         precision_total = []
 
         try:
@@ -212,29 +222,42 @@ class InvertedIndex(object):
 
             precision = []
             eleven_prec = []
+            specificity=[]
             recall = []
 
-            ranking=Ranking(query,self.inv_index,self.userargs.random)
-
+            ranking=Ranking(query,self.inv_index,self.corpussize)
+            print "\nRanking\n"
             print ranking.ranking
             print '\n'
 
+            totalpred=ranking.ranking.index.values.tolist()
             gold_docs = golddata[query.userinput]
+            gold_docs0=[]
+            gold_docs1=[]
 
+            for key in gold_docs:
+                if key[1]=="0":
+                    gold_docs0.append(key)
+                else:
+                    gold_docs1.append(key)
+            
 
+            #print gold_docs0
+            #print
+            #print gold_docs1
             for i in range(1,len(ranking.ranking),1):
 
-                prediction = []
+                prediction = totalpred[:i]
 
-                for index in ranking.ranking[:i].index:
+              #  for index in ranking.ranking[:i].index:
 
-                    prediction.append(index)
+               #     prediction.append(index)
 
 
-                tp,fp,fn,tn = confusion_matrix(gold_docs,prediction)
+                tp,fp,fn,tn,spec = confusion_matrix(gold_docs,prediction)
 
                 precision.append(compute_precision(tp,fp))
-
+                specificity.append(spec)
                 recall.append(compute_recall(tp,fn))
 
             for index in range(len(recall)):
@@ -333,12 +356,17 @@ class InvertedIndex(object):
                 rec_tmp = tupel[0]
                 prec_tmp = tupel[1]
 
-            plt.plot(recall,precision,'b-')
-            plt.plot(rec_tmp,prec_tmp,'r-')
-            plt.xlabel('Recall')
-            plt.ylabel('Precision')
-            plt.title("Precision-Recall graph for query '"+str(query.userinput)+"'")
+            #plt.plot(recall,precision,'b-')
+            #plt.plot(rec_tmp,prec_tmp,'r-')
+            #plt.xlabel('Recall')
+            #plt.ylabel('Precision')
+            #plt.title("Precision-Recall graph for query '"+str(query.userinput)+"'")
 
+
+            plt.plot(specificity,recall,'b-')
+            plt.xlabel('1-Specificity')
+            plt.ylabel('Specificity')
+            plt.title("ROC graph for query '"+str(query.userinput)+"'")
             try:
 
                 plt.savefig("../graphs/"+str(query.userinput).replace(' ','_')+".png", bbox_inches='tight')
@@ -489,8 +517,10 @@ def get_user_args(args):
     ap = argparse.ArgumentParser()
     ap.add_argument('-c', '--corpus', metavar='PATH', type=str, default='./amazon_reviews',
                     help='specify a path for corpus files. Default is ./amazon_reviews')
-    ap.add_argument('-r', '--random', metavar='N', default='10',
+    ap.add_argument('-rand', '--random', metavar='N',
                     help='specify number of randomized documents used for the inverted index. Default is 100 files. If all documents should be considered, type -r all')
+    ap.add_argument('-rank', '--ranking', metavar='N',
+                    help='specify upper bound for documents to be ranked')
     ap.add_argument('-s', '--store', action='store_true',
                     help='activate this flag if you want to store the inverted index into a pickle file')
     ap.add_argument('-p', '--pickle', action='store_true',

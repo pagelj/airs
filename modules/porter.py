@@ -175,4 +175,9 @@ def stem(w):
     return w
 
 if __name__ == '__main__':
-    print stem("fundamentally")
+    print "my"
+    print stem("my")
+    print "mine"
+    print stem("mine")
+    print "was"
+    print stem("was")

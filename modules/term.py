@@ -13,12 +13,6 @@ Summer Term 16
 
 """
 
-import re
-import os
-import math
-from parsedoc import *
-from document import *
-from tokenizer import *
 from porter import *
 
 fileloc="/tmp"
@@ -115,30 +109,7 @@ def terminator(tokens):
 
 def main():
 
-    parsedoc_obj = Parsedoc(os.path.expanduser('./testfile_amazon_rewievs'))
-    texts_obj,file_name = parsedoc_obj.content,parsedoc_obj.docid
-
-    doc_obj={}
-    doc_obj=dict(zip(file_name,texts_obj))
-
-    docs={}
-    termsdict={}
-
-    for name,document in doc_obj.items():
-
-        doc=Document(document)
-        docs[name]=doc.tokens
-        term=Term(doc.tokens)
-        termsdict[name]=term
-
-    terms = termsdict.values()
-
-
-    for term in terms:
-
-        print term.tokens
-        print term.terms
-        print term.tf
+    pass
 
 if __name__=='__main__':
 

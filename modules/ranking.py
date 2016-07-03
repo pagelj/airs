@@ -24,7 +24,7 @@ class Ranking(object):
         magnitude={}
 
         # For every term in the query
-        for term in query.query:
+        for term in query.terms:
 
             # If the term is not in the index, its
             # contribution to the tf-idf values is zero.
@@ -45,7 +45,6 @@ class Ranking(object):
                     else:
 
                         scores[doc] = self.tfidf_query(term,postlist,query)*self.tfidf_doc(postlist,doc)
-
 
 
             else:
@@ -80,9 +79,9 @@ class Ranking(object):
         magrep=pd.DataFrame(magnitude.values(),index=scores.keys(),columns=['Denominator'])
 
         cosinesimilarity=pd.concat([scoresrep,magrep],axis=1)
-        cosinesimilarity['Cosine_Similarity']=cosinesimilarity['Numerator']/(cosinesimilarity['Denominator'])**0.5
+        cosinesimilarity['Cosine_Similarity_Score']=cosinesimilarity['Numerator']/(cosinesimilarity['Denominator'])**0.5
 
-        sortedcosine=cosinesimilarity.sort(['Cosine_Similarity'],ascending=False)
+        sortedcosine=cosinesimilarity.sort(['Cosine_Similarity_Score'],ascending=False)
 
         return sortedcosine
 
@@ -91,10 +90,10 @@ class Ranking(object):
 
         # Compute tf-idf for a term and a given query.
 
-        tf = 1+math.log(float(query.query.count(term)),10)
+        tf = 1+math.log(float(query.terms.count(term)),10)
 
         idf = math.log((float(self.corpussize)/postlist.postingslist_len),10)
-
+        
         return tf*idf
 
 

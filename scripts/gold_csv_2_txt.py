@@ -31,10 +31,14 @@ def convert_csv_2_txt(path):
 
     for line in data_split:
 
+        if line == '':
+
+            continue
+
         line_split = line.split(',')
         doc = line_split[0]
         annotation = line_split[1:]
-
+        
         if 'NA' in annotation:
 
             break

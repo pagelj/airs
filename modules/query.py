@@ -36,19 +36,23 @@ class Query(object):
 
             self.userinput = str(raw_input('\n\nPlease enter your query.\n\n'))
 
-            self.query = self.process_query(self.userinput)
+            self.tokens = self.process_query(self.userinput)
+
+            self.terms = terminator(self.tokens)
 
         elif query_type == 'automatic':
 
             self.userinput = query_input
 
-            self.query = self.process_query(query_input)
+            self.tokens = self.process_query(query_input)
+
+            self.terms = terminator(self.tokens)
 
     def process_query(self,query_input):
 
         query_split = re.split(pattern,query_input)
 
-        return terminator(query_split)
+        return query_split
 
     def return_postingslist(self, query, terms):
 
