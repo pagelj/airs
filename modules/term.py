@@ -12,12 +12,8 @@ Summer Term 16
 04/11/2016
 
 """
-import re
-import os
-import math
-from parsedoc import *
-from document import *
-from tokenizer import *
+
+from porter import *
 
 fileloc="/tmp"
 slash="/"
@@ -62,81 +58,50 @@ class Term(object):
     def __init__(self,tokens):
 
         self.tokens = tokens.tokenized
-        self.terms = self.terminator(self.tokens)
-        self.tf = self.compute_tf(self.tokens,self.terms)
+        self.terms = set(terminator(self.tokens))
 
+def terminator(tokens):
 
-    #def __str__(self):
+    terms = [x.lower() for x in tokens]
+    newterms = []
 
-    #    return str(self.terms)
+    for term in terms:
 
+        #if re.match(special_char,term):
 
-    def terminator(self,tokens):
+        #    continue
 
-        terms = set([x.lower() for x in tokens])
-        newterms = []
+        # lemmatize clitics
 
-        for term in terms:
+        if term == 'an':
 
-            if re.match(special_char,term):
+            newterms.append(stem('a'))
 
-                continue
+        elif term == "'m":
 
-            # lemmatize clitics
+            newterms.append(stem('am'))
 
-            elif term == 'an':
+        elif term == "'re":
 
-                newterms.append('a')
+            newterms.append(stem('are'))
 
-            elif term == "'m":
+        elif term == "'d":
 
-                newterms.append('am')
+            newterms.append(stem('would'))
 
-            elif term == "'re":
+        elif term == "'ll":
 
-                newterms.append('are')
+            newterms.append(stem('will'))
 
-            elif term == "'d":
+        elif term == "'t" or term == "'nt":
 
-                newterms.append('would')
+            newterms.append(stem('not'))
 
-            elif term == "'ll":
+        else:
 
-                newterms.append('will')
+            newterms.append(stem(term))
 
-            elif term == "'t" or term == "'nt":
-
-                newterms.append('not')
-
-            else:
-
-                newterms.append(term)
-
-        return set(newterms)
-
-    def compute_tf(self, tokens, terms):
-
-        tf_values = {}
-
-        for term in terms:
-
-            for token in tokens:
-
-                if term == token:
-
-                    if term in tf_values:
-
-                        tf_values[term] += 1
-
-                    else:
-
-                        tf_values[term] = 1
-
-        for term in tf_values:
-
-            tf_values[term] = 1 + math.log10(tf_values[term])
-
-        return tf_values
+    return newterms
 
 ###########################################################
 ####################### Testing ###########################
@@ -144,30 +109,7 @@ class Term(object):
 
 def main():
 
-    parsedoc_obj = Parsedoc(os.path.expanduser('./testfile_amazon_rewievs'))
-    texts_obj,file_name = parsedoc_obj.content,parsedoc_obj.docid
-
-    doc_obj={}
-    doc_obj=dict(zip(file_name,texts_obj))
-
-    docs={}
-    termsdict={}
-
-    for name,document in doc_obj.items():
-
-        doc=Document(document)
-        docs[name]=doc.tokens
-        term=Term(doc.tokens)
-        termsdict[name]=term
-
-    terms = termsdict.values()
-
-
-    for term in terms:
-
-        print term.tokens
-        print term.terms
-        print term.tf
+    pass
 
 if __name__=='__main__':
 

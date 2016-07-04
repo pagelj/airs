@@ -29,17 +29,21 @@ from modules.parsedoc import *
 from modules.tokenizer import *
 from modules.query import *
 from modules.ranking import *
+from modules.evaluation import *
 import os
 import sys
 import re
 import itertools
 import cPickle as pickle
 import argparse
+import numpy as np
+import matplotlib.pyplot as plt
 
 
 ################################################
 ##################### Classes ##################
 ################################################
+
 
 
 class InvertedIndex(object):
@@ -52,50 +56,380 @@ class InvertedIndex(object):
 
         self.userargs = userargs
 
-        corpus_path = userargs.corpus
-        random_number = userargs.random
-        pickle_file_boolean = userargs.pickle
+        if userargs.random:
+
+            self.corpussize = int(self.userargs.random)
+
+        if userargs.ranking:
+
+            self.corpussize = int(self.userargs.ranking)
 
 
-        # get the texts
+        # Store the inverted index into a pickle file
+        # if requested by the user
+        if self.userargs.pickle:
 
-        parsedoc_obj = Parsedoc(os.path.expanduser(corpus_path), random_number)
-        texts_obj,file_name = parsedoc_obj.content,parsedoc_obj.docid
+            try:
 
-        self.doc_obj={}
-        self.doc_obj=dict(zip(file_name,texts_obj))
-        self._create_terms()
+                with open('docs.pkl','rb') as fp:
 
-        if pickle_file_boolean:
+                    print "\nRead documents from docs.pkl\n"
 
-            with open('../inverted_index.pkl','rb') as fp:
+                    self.docs = pickle.load(fp)
 
-                self.inv_index = pickle.load(fp)
+            except IOError:
+
+                with open('../docs.pkl','rb') as fp:
+
+                    print "\nRead documents from docs.pkl\n"
+
+                    self.docs = pickle.load(fp)
+
+            try:
+
+                with open('inverted_index.pkl','rb') as fp:
+
+                    print "\nRead inverted index from inverted_index.pkl\n"
+
+                    self.inv_index = pickle.load(fp)
+
+            except IOError:
+
+                with open('../inverted_index.pkl','rb') as fp:
+
+                    print "\nRead inverted index from inverted_index.pkl\n"
+
+                    self.inv_index = pickle.load(fp)
 
         else:
+
+            # get the texts
+
+            print "\nReading in the corpus\n"
+
+            parsedoc_obj = Parsedoc(os.path.expanduser(self.userargs.corpus), self.userargs)
+            texts_obj,file_name = parsedoc_obj.content,parsedoc_obj.docid
+
+            self.doc_obj={}
+            self.doc_obj=dict(zip(file_name,texts_obj))
+
+            print "\nReading in of corpus finished\n"
+
+
+            print "\nCreate terms\n"
+
+            self._create_terms()
+
+            print "\nTerms created\n"
+
+            print "\nStart creating the inverted index\n"
 
             self._create_inv_index()
 
-        query = Query()
+            print "\nInverted index created\n"
 
-        postingslists = query.return_postingslist(query.query, self.inv_index)
 
-        intersection = query.logical_and(postingslists)
+        # Run interactive query if set by
+        # user, else run ranking on given queries from
+        # the gold standard
+        if self.userargs.interactive:
 
-        if intersection.postingslist == []:
-
-            print '\nYour query could not be found in the collection.'
+            self.interactive_query()
 
         else:
 
-            print '\nYour queried word(s) occur in the following document(s):'
-            print
 
-            for doc_id in intersection.postingslist:
+            print "\nStart ranking of documents\n"
 
-                print doc_id
+            self.eval_ranking()
 
-        ranking=Ranking(query,self.inv_index,self.docs)
+            print "\nRanking of documents finished\n"
+
+
+
+
+
+
+
+    def interactive_query(self):
+
+        top_rank = 5
+
+        while 1:
+
+            query = Query('','interactive')
+
+            postingslists = query.return_postingslist(query.terms, self.inv_index)
+
+            intersection = query.logical_and(postingslists)
+
+            if intersection.postingslist == []:
+
+                print '\nYour query could not be found in the collection.'
+
+            else:
+
+                print '\nYour queried word(s) occur in the following document(s):'
+                print
+
+                ranking=Ranking(query,self.inv_index,self.corpussize)
+
+                for doc_id in ranking.ranking.index[:top_rank]:
+
+                    print
+                    print doc_id
+                    print Document.snippet(self.docs[doc_id],query)
+
+            userinput = str(raw_input('\n\nIf you would like to continue type "yes" or "y".\nType "no" or "n" to quit the program.\n\n'))
+            if userinput in ("no","n"):
+                sys.exit("\nProgram quiting\n")
+            elif userinput in ("yes","y"):
+                continue
+            else:
+                print '\nError: Could not recognize input.\nPlease type "yes" or "y" if you wish to continue and "no" or "n" if you wish to quit the program.\n'
+                continue
+
+
+    def eval_ranking(self):
+
+        tp_total_list = []
+        fp_total_list = []
+        fn_total_list = []
+        tn_total_list = []
+        spec_total_list=[]
+        precision_total = []
+
+        try:
+
+            golddata = read_golddata('golddata.txt')
+
+        except IOError:
+
+            golddata = read_golddata('../golddata.txt')
+
+        queries = golddata.keys()
+
+        query_list=[]
+
+        for query in queries:
+
+            query = Query(query,'automatic')
+            query_list.append(query)
+
+        for query in query_list:
+
+            print '\nQuery: '+str(query.userinput)+'\n'
+
+            precision = []
+            eleven_prec = []
+            specificity=[]
+            recall = []
+
+            ranking=Ranking(query,self.inv_index,self.corpussize)
+            print "\nRanking\n"
+            print ranking.ranking
+            print '\n'
+
+            totalpred=ranking.ranking.index.values.tolist()
+            gold_docs = golddata[query.userinput]
+            gold_docs0=[]
+            gold_docs1=[]
+
+            for key in gold_docs:
+                if key[1]=="0":
+                    gold_docs0.append(key)
+                else:
+                    gold_docs1.append(key)
+            
+
+            #print gold_docs0
+            #print
+            #print gold_docs1
+            for i in range(1,len(ranking.ranking),1):
+
+                prediction = totalpred[:i]
+
+              #  for index in ranking.ranking[:i].index:
+
+               #     prediction.append(index)
+
+
+                tp,fp,fn,tn,spec = confusion_matrix(gold_docs,prediction)
+
+                precision.append(compute_precision(tp,fp))
+                specificity.append(spec)
+                recall.append(compute_recall(tp,fn))
+
+            for index in range(len(recall)):
+
+                if recall[index] == 0.0:
+
+                    eleven_prec.append((0.0,precision[index]))
+
+                    break
+
+            for index in range(len(recall)):
+
+                if recall[index] <= 0.1:
+
+                    eleven_prec.append((0.1,precision[index]))
+
+                    break
+
+            for index in range(len(recall)):
+
+                if recall[index] > 0.1 and recall[index] <= 0.2:
+
+                    eleven_prec.append((0.2,precision[index]))
+
+                    break
+
+            for index in range(len(recall)):
+
+                if recall[index] > 0.2 and recall[index] <= 0.3:
+
+                    eleven_prec.append((0.3,precision[index]))
+
+                    break
+
+            for index in range(len(recall)):
+
+                if recall[index] > 0.3 and recall[index] <= 0.4:
+
+                    eleven_prec.append((0.4,precision[index]))
+
+                    break
+
+            for index in range(len(recall)):
+
+                if recall[index] > 0.4 and recall[index] <= 0.5:
+
+                    eleven_prec.append((0.5,precision[index]))
+
+                    break
+
+            for index in range(len(recall)):
+
+                if recall[index] > 0.5 and recall[index] <= 0.6:
+
+                    eleven_prec.append((0.6,precision[index]))
+
+                    break
+
+            for index in range(len(recall)):
+
+                if recall[index] > 0.6 and recall[index] <= 0.7:
+
+                    eleven_prec.append((0.7,precision[index]))
+
+                    break
+
+            for index in range(len(recall)):
+
+                if recall[index] > 0.8 and recall[index] <= 0.9:
+
+                    eleven_prec.append((0.8,precision[index]))
+
+                    break
+
+            for index in range(len(recall)):
+
+                if recall[index] > 0.9 and recall[index] < 1.0:
+
+                    eleven_prec.append((0.9,precision[index]))
+
+                    break
+
+            for index in range(len(recall)):
+
+                if recall[index] == 1.0:
+
+                    eleven_prec.append((1.0,precision[index]))
+
+                    break
+
+            rec_tmp = []
+            prec = []
+
+            for tupel in eleven_prec:
+
+                rec_tmp = tupel[0]
+                prec_tmp = tupel[1]
+
+            #plt.plot(recall,precision,'b-')
+            #plt.plot(rec_tmp,prec_tmp,'r-')
+            #plt.xlabel('Recall')
+            #plt.ylabel('Precision')
+            #plt.title("Precision-Recall graph for query '"+str(query.userinput)+"'")
+
+
+            plt.plot(specificity,recall,'b-')
+            plt.xlabel('1-Specificity')
+            plt.ylabel('Specificity')
+            plt.title("ROC graph for query '"+str(query.userinput)+"'")
+            try:
+
+                plt.savefig("../graphs/"+str(query.userinput).replace(' ','_')+".png", bbox_inches='tight')
+
+            except IOError:
+
+                plt.savefig("graphs/"+str(query.userinput).replace(' ','_')+".png", bbox_inches='tight')
+
+            plt.close()
+
+            print '11-point-precision'
+            for rec,prec in eleven_prec:
+                print rec,'\t',prec
+            print '\n'
+
+            precision_total.append(eleven_prec)
+
+        precision_average = {}
+
+        for pres in precision_total:
+
+            for tupel in pres:
+
+                if tupel[0] in precision_average:
+
+                    precision_average[tupel[0]].append(tupel[1])
+
+                else:
+
+                    precision_average[tupel[0]] = [tupel[1]]
+
+        for rec in precision_average:
+
+            precision_average[rec] = float(sum(precision_average[rec]))/len(precision_average[rec])
+
+        prec_tmp = []
+        rec_tmp = []
+
+        for rec in sorted(precision_average.keys()):
+
+            rec_tmp.append(rec)
+            prec_tmp.append(precision_average[rec])
+
+        plt.plot(rec_tmp,prec_tmp,'b-')
+        plt.xlabel('Recall')
+        plt.ylabel('Precision')
+        plt.title("Precision-Recall graph")
+
+        try:
+
+            plt.savefig("../graphs/total.png", bbox_inches='tight')
+
+        except IOError:
+
+            plt.savefig("graphs/total.png", bbox_inches='tight')
+
+        plt.close()
+
+        print 'System 11-point-precision'
+        for rec in sorted(precision_average.keys()):
+            print rec,'\t',precision_average[rec]
+        print '\n'
+
 
 
 
@@ -113,6 +447,24 @@ class InvertedIndex(object):
 
         self.terms = self.termsdict.values()
 
+        filename_terms='terms'
+        filename_docs='docs'
+        path='../'
+
+        if self.userargs.store:
+
+            with open(path.strip()+filename_terms.strip()+'.pkl','wb') as fp:
+
+                pickle.dump(self.terms, fp)
+
+            print "\nStored terms into " + str(filename_terms) + ".pkl\n"
+
+            with open(path.strip()+filename_docs.strip()+'.pkl','wb') as fp:
+
+                pickle.dump(self.docs, fp)
+
+            print "\nStored documents into " + str(filename_docs) + ".pkl\n"
+
     def _create_inv_index(self):
 
         self.inv_index={}
@@ -121,17 +473,23 @@ class InvertedIndex(object):
 
             for term in terms.terms:
 
+                #print "Updating postingslist for term "+str(term)
+
                 if term in self.inv_index:
 
                     self.inv_index[term]._update_postingslist(name)
+                    self.inv_index[term]._gettf(name,self.docs)
                     #print (term,self.inv_index[term])
 
                 else:
 
-                    postingslist = Postingslist(term)
+                    postingslist = Postingslist(term,self.docs)
                     postingslist._update_postingslist(name)
+                    postingslist._gettf(name,self.docs)
                     self.inv_index[term]=postingslist
                     #print (term,self.inv_index[term].postingslist)
+
+
 
         if self.userargs.store:
 
@@ -142,7 +500,7 @@ class InvertedIndex(object):
 
                 pickle.dump(self.inv_index, fp)
 
-            print "\nStored inverted index into " + str(filename) + ".pkl\n\n"
+            print "\nStored inverted index into " + str(filename) + ".pkl\n"
 
 
     # create terms on hard disk
@@ -159,12 +517,16 @@ def get_user_args(args):
     ap = argparse.ArgumentParser()
     ap.add_argument('-c', '--corpus', metavar='PATH', type=str, default='./amazon_reviews',
                     help='specify a path for corpus files. Default is ./amazon_reviews')
-    ap.add_argument('-r', '--random', metavar='N', default='100',
+    ap.add_argument('-rand', '--random', metavar='N',
                     help='specify number of randomized documents used for the inverted index. Default is 100 files. If all documents should be considered, type -r all')
+    ap.add_argument('-rank', '--ranking', metavar='N',
+                    help='specify upper bound for documents to be ranked')
     ap.add_argument('-s', '--store', action='store_true',
                     help='activate this flag if you want to store the inverted index into a pickle file')
     ap.add_argument('-p', '--pickle', action='store_true',
                     help='activate this flag if you wish to read the inverted index from a stored pickle file')
+    ap.add_argument('-i', '--interactive', action='store_true',
+                    help='activate this flag if you want to enter interactive mode')
     ap.add_argument('--version', action='version', version=__version__)
 
     return ap.parse_args(args)

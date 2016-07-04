@@ -26,6 +26,7 @@ class Token(object):
 
         self.string = str(token)
         self.length = len(token)
+        self.term = terminator(token)
 
 
 ###########################################################

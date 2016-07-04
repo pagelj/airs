@@ -15,6 +15,7 @@ Summer Term 16
 
 import re
 from postingslist import *
+from porter import *
 
 
 def natural_sortkey(string):
@@ -29,14 +30,29 @@ pattern = r'[& ]'
 
 class Query(object):
 
-    def __init__(self):
+    def __init__(self,query_input,query_type):
 
-        self.userinput = str(raw_input('Please enter your query.\n\n'))
-        self.query = self.process_query()
+        if query_type == 'interactive':
 
-    def process_query(self):
+            self.userinput = str(raw_input('\n\nPlease enter your query.\n\n'))
 
-        return re.split(pattern,self.userinput)
+            self.tokens = self.process_query(self.userinput)
+
+            self.terms = terminator(self.tokens)
+
+        elif query_type == 'automatic':
+
+            self.userinput = query_input
+
+            self.tokens = self.process_query(query_input)
+
+            self.terms = terminator(self.tokens)
+
+    def process_query(self,query_input):
+
+        query_split = re.split(pattern,query_input)
+
+        return query_split
 
     def return_postingslist(self, query, terms):
 
@@ -50,7 +66,7 @@ class Query(object):
 
             else:
 
-                empty_postingslist = Postingslist('')
+                empty_postingslist = Postingslist('','')
 
                 postingslists.append(empty_postingslist)
 
@@ -62,13 +78,13 @@ class Query(object):
 
         if len(postingslists) == 0:
 
-            intersection = Postingslist('')
+            intersection = Postingslist('','')
 
             return intersection
 
         elif len(postingslists) == 1:
 
-            intersection = Postingslist('')
+            intersection = Postingslist('','')
             intersection._update_postingslist(postingslists[0].postingslist)
 
             return intersection
@@ -87,11 +103,56 @@ class Query(object):
 
                 intersection = set(postingslist3.postingslist).intersection(set(intersection))
 
-            intersection_obj = Postingslist('')
+            intersection_obj = Postingslist('','')
 
             intersection_obj._update_postingslist(sorted(list(intersection), key=natural_sortkey))
 
             return intersection_obj
+
+def terminator(tokens):
+
+    special_char = r"""[!,."']"""
+
+    terms = [x.lower() for x in tokens]
+    newterms = []
+
+    for term in terms:
+
+        #if re.match(special_char,term):
+
+        #    continue
+
+        # lemmatize clitics
+
+        if term == 'an':
+
+            newterms.append(stem('a'))
+
+        elif term == "'m":
+
+            newterms.append(stem('am'))
+
+        elif term == "'re":
+
+            newterms.append(stem('are'))
+
+        elif term == "'d":
+
+            newterms.append(stem('would'))
+
+        elif term == "'ll":
+
+            newterms.append(stem('will'))
+
+        elif term == "'t" or term == "'nt":
+
+            newterms.append(stem('not'))
+
+        else:
+
+            newterms.append(stem(term))
+
+    return newterms
 
 ###########################################################
 ####################### Testing ###########################

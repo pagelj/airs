@@ -44,3 +44,7 @@ nano.save
 *.snm
 *.vrb
 *.brf
+
+### csv
+*.csv
+*/*.csv

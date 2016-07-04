@@ -14,6 +14,8 @@ Summer Term 16
 """
 
 import re
+import term
+import math
 
 ################################################
 ##################### Classes ##################
@@ -29,35 +31,55 @@ def natural_sortkey(string):
 
 class Postingslist(object):
 
-    def __init__(self, term_id):
+    def __init__(self, term_id, docs):
 
+        self.docs = docs
         self.term_id = term_id
         self.postingslist = []
+        self.tf = {}
         self.postingslist_len = len(self.postingslist)
 
-    #def __str__(self):
+    def __str__(self):
 
-    #    return str(self.postingslist)
+        return str(self.postingslist)
 
     def _update_postingslist(self, doc_id):
 
         if isinstance(doc_id, basestring):
 
             self.postingslist.append(doc_id)
-            self.postingslist = sorted(self.postingslist, key=natural_sortkey)
+
+            self.postingslist = sorted(list(set(self.postingslist)), key=natural_sortkey)
 
             self.postingslist_len = len(self.postingslist)
 
         else:
 
             self.postingslist.extend(doc_id)
-            self.postingslist = sorted(self.postingslist, key=natural_sortkey)
+
+            self.postingslist = sorted(list(set(self.postingslist)), key=natural_sortkey)
 
             self.postingslist_len = len(self.postingslist)
 
     def getPostingsList(self):
 
         return self.postingslist
+
+    def _gettf(self, doc_id, docs):
+
+        doc_content = term.terminator(docs[doc_id].tokens.tokenized)
+
+        if self.term_id not in doc_content:
+
+            tf_value = 0
+
+        else:
+
+            tf_value = 1+math.log(float(doc_content.count(self.term_id)),10)
+
+        self.tf[doc_id] = tf_value
+
+
 
 ###########################################################
 ####################### Testing ###########################
