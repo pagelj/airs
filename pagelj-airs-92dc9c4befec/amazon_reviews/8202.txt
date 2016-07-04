@@ -1,0 +1,1 @@
+I have issues periodically with the sensor not wanting to "see" me. However, a quick toggle of the power switch fixes this.

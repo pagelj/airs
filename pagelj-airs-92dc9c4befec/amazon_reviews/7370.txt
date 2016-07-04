@@ -1,0 +1,2 @@
+No issues with Surface RT, easy to install and expand my libraries
+The SD card was quickly detected and showed up in File Manager as SD.  I reformatted it to NTFS from exFat for security since the tablet is shared.  Using tips from here I was able to get my music on the SD card to show up on the Window Store apps:[...]

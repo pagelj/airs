@@ -1,0 +1,2 @@
+works great with my SD TV
+This does what it is supposed to do but the instructions are very sparse.  My old Sony trinitron only has one RCA out and they don't tell you how to go around this if you have cable.  After reading the reviews on AMazon and comments on the Roku boards,  I remedied this by buying an inexpensive switcher on Amazon, connecting it and leaving it on Roku as the source.  The cable stays on but changes to Roku when you push the TV/video button on the TV.

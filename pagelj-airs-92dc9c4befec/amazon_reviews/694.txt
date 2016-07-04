@@ -1,0 +1,2 @@
+Good, does the job, but noisy on startup.
+This is your standard ROM. Plug and play and really no issues fitting in a smaller case. However, it is noisy at startup, which is slightly annoying, since the rest of the PC manages to stay quiet.

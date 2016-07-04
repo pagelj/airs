@@ -1,0 +1,2 @@
+Very useful for a beginner
+We are only 1/3 through this book, but it seems to be exactly what we were looking for.  It helps to get the Pi up and running, gives a few useful details about Linux; then offers some solid Python instruction and culminates in two neat projects.  The author has a website to compliment the book and help out when the reader gets stuck on a programming exercise.  Great stuff!

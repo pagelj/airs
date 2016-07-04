@@ -1,0 +1,2 @@
+Did not work for me
+Tried to install this on a Win XP system and a Win 7 system, neither attempt worked.  Windows stated that there is a problem with the device when I look into the driver properties.  Tried downloading newest drivers from the website and updating w/o any luck.  Must have gotten a defective product, it will spend the rest of it's days in a landfill where it belongs.

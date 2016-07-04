@@ -1,0 +1,2 @@
+Can't switch to bluetooth headset
+When using a bluetooth headset, the KX-TG7731 will not allow you to switch from the the baset unit/handset to the bluetooth headset, or from the headset to the base unit/handset.  You can answer a call from your headset, but there is no way to place a call and then use the headset.  You have to have the KX-TG7741 to do that, per the instructions, but there is no information in the Product Details or on Panasonic's web site that states this.

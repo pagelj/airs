@@ -1,0 +1,2 @@
+From Novice to good Amateur in a few days
+I did not speak a word of Python and now I have developed several programs - text and GUI based.  In a few days I had the Pi running and understood the development cycle.  I give high marks to the author.

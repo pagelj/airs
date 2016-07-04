@@ -1,0 +1,2 @@
+Excellent dongle for wither Linux or Windows
+I have this dongle and it is very easy to configure it for Windows XP. For Linux, the story is a bit different but the end result is good. Linux Mint Debian (rolling release) picks up this dongle automatically so it works right out of the box.  It must be the latest kernels that have the support for this built-in. For other Linux systems (I used Ubuntu 10.10, Linux Mint 10, and SalineOS 1.5), I needed to download the latest driver from he manufacture and then install it. A very good buy and I ordered a couple more for spares.
