@@ -1,2 +1,0 @@
-Damned handy
-Quick, accurate access to movie times and descriptions. Uses Rotten Tomatoes for reviews. Well worth the minimal effort to install.

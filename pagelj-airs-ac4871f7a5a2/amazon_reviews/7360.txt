@@ -1,2 +1,0 @@
-Good basic introductory book
-Concepts are clear and easily understood.  Starts at the begining as if the reader knows nothing about programming.  I would like to see an advanced version that takes off from this.

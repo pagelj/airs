@@ -1,2 +1,0 @@
-Power connector is weak
-I ended up having to hard wire the monitor to vehicle power since I considered the wires supplied with the power connection to be too flimsy. Since there are no instructions for this item it helps to have a little electrical knowledge. Otherwise it works as it should - so far.

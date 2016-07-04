@@ -1,2 +1,0 @@
-latest iOS not compatible
-Not Apple OEM despite appearances.  After an upgrade to iOS, this cable is no longer recognized and the iPhone will no longer charge off of it.

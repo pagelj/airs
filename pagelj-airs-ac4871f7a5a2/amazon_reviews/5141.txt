@@ -1,2 +1,0 @@
-Mine works fine but it must be connected in a specific way
-I realize there have been variable reports about this product.  I found it to be necessary to turn off the iPad, put the card in the reader, plug the reader in to the iPad and then turn the iPad back on.  Then it works well.  Other connection sequences were not effective.
