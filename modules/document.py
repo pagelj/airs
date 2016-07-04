@@ -38,7 +38,7 @@ class Document(object):
 
         terms = terminator(doc.tokens.tokenized)
         tokens = doc.tokens.tokenized
-        query = query.query
+        query = query.terms
         snippet = []
 
         for token_id in range(len(tokens)):

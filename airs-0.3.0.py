@@ -93,6 +93,8 @@ class InvertedIndex(object):
 
                     self.inv_index = pickle.load(fp)
 
+                    self.corpussize = 2000
+
             except IOError:
 
                 with open('../inverted_index.pkl','rb') as fp:
@@ -100,6 +102,8 @@ class InvertedIndex(object):
                     print "\nRead inverted index from inverted_index.pkl\n"
 
                     self.inv_index = pickle.load(fp)
+
+                    self.corpussize = 2000
 
         else:
 
@@ -151,6 +155,7 @@ class InvertedIndex(object):
 
 
 
+
     def interactive_query(self):
 
         top_rank = 5
@@ -192,12 +197,9 @@ class InvertedIndex(object):
 
     def eval_ranking(self):
 
-        tp_total_list = []
-        fp_total_list = []
-        fn_total_list = []
-        tn_total_list = []
         spec_total_list=[]
         precision_total = []
+        precision_recall_total = []
 
         try:
 
@@ -256,9 +258,12 @@ class InvertedIndex(object):
 
                 tp,fp,fn,tn,spec = confusion_matrix(gold_docs,prediction)
 
-                precision.append(compute_precision(tp,fp))
+                precision_value = compute_precision(tp,fp)
+                precision.append(precision_value)
                 specificity.append(spec)
-                recall.append(compute_recall(tp,fn))
+                recall_value = compute_recall(tp,fn)
+                recall.append(recall_value)
+
 
             for index in range(len(recall)):
 
@@ -349,12 +354,12 @@ class InvertedIndex(object):
                     break
 
             rec_tmp = []
-            prec = []
+            prec_tmp = []
 
             for tupel in eleven_prec:
 
-                rec_tmp = tupel[0]
-                prec_tmp = tupel[1]
+                rec_tmp.append(tupel[0])
+                prec_tmp.append(tupel[1])
 
             #plt.plot(recall,precision,'b-')
             #plt.plot(rec_tmp,prec_tmp,'r-')
@@ -362,18 +367,39 @@ class InvertedIndex(object):
             #plt.ylabel('Precision')
             #plt.title("Precision-Recall graph for query '"+str(query.userinput)+"'")
 
-
-            plt.plot(specificity,recall,'b-')
+            plt.plot(specificity,recall)
             plt.xlabel('1-Specificity')
             plt.ylabel('Specificity')
             plt.title("ROC graph for query '"+str(query.userinput)+"'")
+            
             try:
 
-                plt.savefig("../graphs/"+str(query.userinput).replace(' ','_')+".png", bbox_inches='tight')
+                plt.savefig("../graphs/specificity_"+str(query.userinput).replace(' ','_')+".png", bbox_inches='tight')
+                print "\nStored graph in "+"../graphs/specificity_"+str(query.userinput).replace(' ','_')+".png\n"
 
             except IOError:
 
-                plt.savefig("graphs/"+str(query.userinput).replace(' ','_')+".png", bbox_inches='tight')
+                plt.savefig("graphs/specificity_"+str(query.userinput).replace(' ','_')+".png", bbox_inches='tight')
+                print "\nStored graph in "+"graphs/specificity_"+str(query.userinput).replace(' ','_')+".png\n"
+
+            plt.close()
+
+            prec_recall_plot, = plt.plot(recall,precision,'b-',label='overall precision-recall')
+            eleven_prec_recall_plot, = plt.plot(rec_tmp,prec_tmp,'r-',label='11-point precision-recall')
+            plt.xlabel('Recall')
+            plt.ylabel('Precision')
+            plt.title("Precision-Recall graph for query '"+str(query.userinput)+"'")
+            plt.legend(handles=[prec_recall_plot,eleven_prec_recall_plot])
+            
+            try:
+
+                plt.savefig("../graphs/precrec_"+str(query.userinput).replace(' ','_')+".png", bbox_inches='tight')
+                print "\nStored graph in "+"../graphs/precrec_"+str(query.userinput).replace(' ','_')+".png\n"
+
+            except IOError:
+
+                plt.savefig("graphs/precrec_"+str(query.userinput).replace(' ','_')+".png", bbox_inches='tight')
+                print "\nStored graph in "+"graphs/precrec_"+str(query.userinput).replace(' ','_')+".png\n"
 
             plt.close()
 
@@ -413,7 +439,7 @@ class InvertedIndex(object):
         plt.plot(rec_tmp,prec_tmp,'b-')
         plt.xlabel('Recall')
         plt.ylabel('Precision')
-        plt.title("Precision-Recall graph")
+        plt.title("11-point Precision-Recall graph for all queries")
 
         try:
 

@@ -19,8 +19,6 @@ Summer Term 16
 
 import re
 
-from parsedoc import *
-from document import *
 
 ################################################
 ##################### Classes ##################
@@ -37,6 +35,14 @@ class Tokenizer(object):
         self.text = text
         #self.tokenized = self._simple_tokenize(self.text)
         self.tokenized = self._complex_tokenize(self.text)
+
+        second_tokenization = []
+        for token in self.tokenized:
+
+            second_tokenization.append(self._complex_tokenize(token)[0])
+
+        self.tokenized = second_tokenization
+
 
     def __str__(self):
 
@@ -156,21 +162,9 @@ def main():
     Tokenizer1 = Tokenizer("""This is a test sentence. This is another sentence!!! "Why is it so?"
                             He'll never know.... That's a shame. He won't ever do it. I can't tell.
                             Keep dot when it is an abbr. and the following token is lowercased. !Hyphen-Test. -Test test-test""")
+    Tokenizer2 = Tokenizer("32gb~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~i")
     print Tokenizer1.tokenized
-
-    parsedoc_obj = Parsedoc(os.path.expanduser('../amazon_reviews'),'all')
-    texts_obj,file_name = parsedoc_obj.content,parsedoc_obj.docid
-
-    doc_obj={}
-    doc_obj=dict(zip(file_name,texts_obj))
-
-    for name,document in doc_obj.items():
-
-        doc=Document(document)
-        print
-        print name
-        print doc.tokens
-
+    print Tokenizer2.tokenized
 
 if __name__=='__main__':
 
