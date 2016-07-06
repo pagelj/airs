@@ -56,14 +56,6 @@ class InvertedIndex(object):
 
         self.userargs = userargs
 
-        if userargs.random:
-
-            self.corpussize = int(self.userargs.random)
-
-        if userargs.ranking:
-
-            self.corpussize = int(self.userargs.ranking)
-
 
         # Store the inverted index into a pickle file
         # if requested by the user
@@ -93,7 +85,8 @@ class InvertedIndex(object):
 
                     self.inv_index = pickle.load(fp)
 
-                    self.corpussize = 2000
+                    self.corpussize = len(self.docs.keys())
+
 
             except IOError:
 
@@ -103,7 +96,7 @@ class InvertedIndex(object):
 
                     self.inv_index = pickle.load(fp)
 
-                    self.corpussize = 2000
+                    self.corpussize = len(self.docs.keys())
 
         else:
 
@@ -198,8 +191,9 @@ class InvertedIndex(object):
     def eval_ranking(self):
 
         spec_total_list=[]
-        precision_total = []
-        precision_recall_total = []
+        eleven_precision_total = []
+        precision_recall_total = {}
+        specificity_total = {}
 
         try:
 
@@ -247,7 +241,7 @@ class InvertedIndex(object):
             #print gold_docs0
             #print
             #print gold_docs1
-            for i in range(1,len(ranking.ranking),1):
+            for i in xrange(1,len(ranking.ranking),1):
 
                 prediction = totalpred[:i]
 
@@ -265,7 +259,7 @@ class InvertedIndex(object):
                 recall.append(recall_value)
 
 
-            for index in range(len(recall)):
+            for index in xrange(len(recall)):
 
                 if recall[index] == 0.0:
 
@@ -273,7 +267,7 @@ class InvertedIndex(object):
 
                     break
 
-            for index in range(len(recall)):
+            for index in xrange(len(recall)):
 
                 if recall[index] <= 0.1:
 
@@ -281,7 +275,7 @@ class InvertedIndex(object):
 
                     break
 
-            for index in range(len(recall)):
+            for index in xrange(len(recall)):
 
                 if recall[index] > 0.1 and recall[index] <= 0.2:
 
@@ -289,7 +283,7 @@ class InvertedIndex(object):
 
                     break
 
-            for index in range(len(recall)):
+            for index in xrange(len(recall)):
 
                 if recall[index] > 0.2 and recall[index] <= 0.3:
 
@@ -297,7 +291,7 @@ class InvertedIndex(object):
 
                     break
 
-            for index in range(len(recall)):
+            for index in xrange(len(recall)):
 
                 if recall[index] > 0.3 and recall[index] <= 0.4:
 
@@ -305,7 +299,7 @@ class InvertedIndex(object):
 
                     break
 
-            for index in range(len(recall)):
+            for index in xrange(len(recall)):
 
                 if recall[index] > 0.4 and recall[index] <= 0.5:
 
@@ -313,7 +307,7 @@ class InvertedIndex(object):
 
                     break
 
-            for index in range(len(recall)):
+            for index in xrange(len(recall)):
 
                 if recall[index] > 0.5 and recall[index] <= 0.6:
 
@@ -321,7 +315,7 @@ class InvertedIndex(object):
 
                     break
 
-            for index in range(len(recall)):
+            for index in xrange(len(recall)):
 
                 if recall[index] > 0.6 and recall[index] <= 0.7:
 
@@ -329,7 +323,7 @@ class InvertedIndex(object):
 
                     break
 
-            for index in range(len(recall)):
+            for index in xrange(len(recall)):
 
                 if recall[index] > 0.8 and recall[index] <= 0.9:
 
@@ -337,7 +331,7 @@ class InvertedIndex(object):
 
                     break
 
-            for index in range(len(recall)):
+            for index in xrange(len(recall)):
 
                 if recall[index] > 0.9 and recall[index] < 1.0:
 
@@ -345,7 +339,7 @@ class InvertedIndex(object):
 
                     break
 
-            for index in range(len(recall)):
+            for index in xrange(len(recall)):
 
                 if recall[index] == 1.0:
 
@@ -367,25 +361,26 @@ class InvertedIndex(object):
             #plt.ylabel('Precision')
             #plt.title("Precision-Recall graph for query '"+str(query.userinput)+"'")
 
-            plt.plot(specificity,recall)
+            plt.plot(specificity,recall,'b-',label='overall ROC')
             plt.xlabel('1-Specificity')
-            plt.ylabel('Specificity')
+            plt.ylabel('Sensitivity')
             plt.title("ROC graph for query '"+str(query.userinput)+"'")
             
             try:
 
-                plt.savefig("../graphs/specificity_"+str(query.userinput).replace(' ','_')+".png", bbox_inches='tight')
-                print "\nStored graph in "+"../graphs/specificity_"+str(query.userinput).replace(' ','_')+".png\n"
+                plt.savefig("graphs/roc_"+str(query.userinput).replace(' ','_')+".png", bbox_inches='tight')
+                print "\nStored graph in "+"graphs/roc_"+str(query.userinput).replace(' ','_')+".png\n"
 
             except IOError:
 
-                plt.savefig("graphs/specificity_"+str(query.userinput).replace(' ','_')+".png", bbox_inches='tight')
-                print "\nStored graph in "+"graphs/specificity_"+str(query.userinput).replace(' ','_')+".png\n"
+                plt.savefig("../graphs/roc_"+str(query.userinput).replace(' ','_')+".png", bbox_inches='tight')
+                print "\nStored graph in "+"../graphs/roc_"+str(query.userinput).replace(' ','_')+".png\n"
 
             plt.close()
 
             prec_recall_plot, = plt.plot(recall,precision,'b-',label='overall precision-recall')
             eleven_prec_recall_plot, = plt.plot(rec_tmp,prec_tmp,'r-',label='11-point precision-recall')
+            plt.axis([0.0,1.0,0.0,1.0])
             plt.xlabel('Recall')
             plt.ylabel('Precision')
             plt.title("Precision-Recall graph for query '"+str(query.userinput)+"'")
@@ -393,13 +388,13 @@ class InvertedIndex(object):
             
             try:
 
-                plt.savefig("../graphs/precrec_"+str(query.userinput).replace(' ','_')+".png", bbox_inches='tight')
-                print "\nStored graph in "+"../graphs/precrec_"+str(query.userinput).replace(' ','_')+".png\n"
+                plt.savefig("graphs/precrec_"+str(query.userinput).replace(' ','_')+".png", bbox_inches='tight')
+                print "\nStored graph in "+"graphs/precrec_"+str(query.userinput).replace(' ','_')+".png\n"
 
             except IOError:
 
-                plt.savefig("graphs/precrec_"+str(query.userinput).replace(' ','_')+".png", bbox_inches='tight')
-                print "\nStored graph in "+"graphs/precrec_"+str(query.userinput).replace(' ','_')+".png\n"
+                plt.savefig("../graphs/precrec_"+str(query.userinput).replace(' ','_')+".png", bbox_inches='tight')
+                print "\nStored graph in "+"../graphs/precrec_"+str(query.userinput).replace(' ','_')+".png\n"
 
             plt.close()
 
@@ -408,25 +403,62 @@ class InvertedIndex(object):
                 print rec,'\t',prec
             print '\n'
 
-            precision_total.append(eleven_prec)
+            eleven_precision_total.append(eleven_prec)
 
-        precision_average = {}
+            # For each recall in the query eval store the corresponding precision value
+            
+            for rec_id in xrange(len(recall)):
 
-        for pres in precision_total:
+                if recall[rec_id] in precision_recall_total:
 
-            for tupel in pres:
-
-                if tupel[0] in precision_average:
-
-                    precision_average[tupel[0]].append(tupel[1])
+                    precision_recall_total[recall[rec_id]].append(precision[rec_id])
 
                 else:
 
-                    precision_average[tupel[0]] = [tupel[1]]
+                    precision_recall_total[recall[rec_id]] = [precision[rec_id]]
 
-        for rec in precision_average:
+            # Store specificity for 1-Specificity values for each query
+                    
+            for spec_id in xrange(len(recall)):
 
-            precision_average[rec] = float(sum(precision_average[rec]))/len(precision_average[rec])
+                if recall[spec_id] in specificity_total:
+
+                    specificity_total[recall[spec_id]].append(specificity[spec_id])
+
+                else:
+
+                    specificity_total[recall[spec_id]] = [specificity[spec_id]]
+
+            
+
+
+        # Calculate the average overall precision
+
+        precision_average = {}
+        
+        for rec in precision_recall_total:
+
+            if rec == None:
+
+                continue
+
+            else:
+
+                
+                if precision_recall_total[rec] == [None]:
+
+                    continue
+
+                elif None in precision_recall_total[rec]:
+
+                    precision_average[rec] = float(sum(filter(None,precision_recall_total[rec])))/len(precision_recall_total[rec])
+
+                else:
+
+                    precision_average[rec] = float(sum(precision_recall_total[rec]))/len(precision_recall_total[rec])
+
+
+        # Plot Precision average
 
         prec_tmp = []
         rec_tmp = []
@@ -435,25 +467,113 @@ class InvertedIndex(object):
 
             rec_tmp.append(rec)
             prec_tmp.append(precision_average[rec])
+        
 
-        plt.plot(rec_tmp,prec_tmp,'b-')
+        total_prec_recall, = plt.plot(rec_tmp,prec_tmp,'b-', label="overall precision-recall")
         plt.xlabel('Recall')
         plt.ylabel('Precision')
-        plt.title("11-point Precision-Recall graph for all queries")
+        plt.title("Precision-Recall graph for all queries")
+
+            
+        # Calculate the average 11-point precision
+            
+        eleven_precision_average = {}
+
+        for pres in eleven_precision_total:
+
+            for tupel in pres:
+
+                if tupel[0] in eleven_precision_average:
+
+                    eleven_precision_average[tupel[0]].append(tupel[1])
+
+                else:
+
+                    eleven_precision_average[tupel[0]] = [tupel[1]]
+
+        for rec in eleven_precision_average:
+
+            eleven_precision_average[rec] = float(sum(eleven_precision_average[rec]))/len(eleven_precision_average[rec])
+
+        prec_tmp = []
+        rec_tmp = []
+
+        for rec in sorted(eleven_precision_average.keys()):
+
+            rec_tmp.append(rec)
+            prec_tmp.append(eleven_precision_average[rec])
+
+        
+
+        total_eleven_prec_recall, = plt.plot(rec_tmp,prec_tmp,'r-', label="11-point precision-recall")
+        plt.legend(handles=[total_prec_recall,total_eleven_prec_recall])
 
         try:
 
-            plt.savefig("../graphs/total.png", bbox_inches='tight')
+            plt.savefig("graphs/total_precrec.png", bbox_inches='tight')
+            print "\nStored graph in graphs/total_precrec.png\n"
 
         except IOError:
 
-            plt.savefig("graphs/total.png", bbox_inches='tight')
+            plt.savefig("../graphs/total_precrec.png", bbox_inches='tight')
+            print "\nStored graph in ../graphs/total_precrec.png\n"
 
         plt.close()
 
+        # Plot total specificity
+
+        specificity_average = {}
+
+
+        for spec in specificity_total:
+
+            if spec == None:
+
+                continue
+
+            else:
+
+                if specificity_total[spec] == [None]:
+
+                    continue
+
+                elif None in specificity_total[spec]:
+
+                    specificity_average[spec] = float(sum(filter(None,specificity_total[spec])))/len(specificity_total[spec])
+
+                else:
+
+                    specificity_average[spec] = float(sum(specificity_total[spec]))/len(specificity_total[spec])
+
+        spec_tmp = []
+        rec_tmp = []
+
+
+        for spec in sorted(specificity_average.keys()):
+
+            spec_tmp.append(spec)
+            rec_tmp.append(specificity_average[spec])
+
+        plt.plot(spec_tmp,rec_tmp,'b-',label='overall ROC')
+        plt.xlabel('1-Specificity')
+        plt.ylabel('Sensitivity')
+        plt.title("ROC graph for all queries")
+            
+        try:
+
+            plt.savefig("graphs/total_roc.png", bbox_inches='tight')
+            print "\nStored graph in graphs/total_roc.png\n"
+
+        except IOError:
+
+            plt.savefig("../graphs/total_roc.png", bbox_inches='tight')
+            print "\nStored graph in ../graphs/total_roc.png\n"
+
+        plt.close()
+            
         print 'System 11-point-precision'
-        for rec in sorted(precision_average.keys()):
-            print rec,'\t',precision_average[rec]
+        for rec in sorted(eleven_precision_average.keys()):
+            print rec,'\t',eleven_precision_average[rec]
         print '\n'
 
 
@@ -472,6 +592,8 @@ class InvertedIndex(object):
             self.termsdict[name]=term
 
         self.terms = self.termsdict.values()
+
+        self.corpussize = len(self.docs.keys())
 
         filename_terms='terms'
         filename_docs='docs'
@@ -505,6 +627,7 @@ class InvertedIndex(object):
 
                     self.inv_index[term]._update_postingslist(name)
                     self.inv_index[term]._gettf(name,self.docs)
+                    self.inv_index[term]._getposition(name,self.docs)
                     #print (term,self.inv_index[term])
 
                 else:
@@ -512,8 +635,14 @@ class InvertedIndex(object):
                     postingslist = Postingslist(term,self.docs)
                     postingslist._update_postingslist(name)
                     postingslist._gettf(name,self.docs)
+                    postingslist._getposition(name,self.docs)
                     self.inv_index[term]=postingslist
                     #print (term,self.inv_index[term].postingslist)
+
+        for term in self.inv_index:
+
+            print term
+            print self.inv_index[term].position
 
 
 

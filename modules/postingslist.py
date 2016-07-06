@@ -37,6 +37,7 @@ class Postingslist(object):
         self.term_id = term_id
         self.postingslist = []
         self.tf = {}
+        self.position = {}
         self.postingslist_len = len(self.postingslist)
 
     def __str__(self):
@@ -78,6 +79,28 @@ class Postingslist(object):
             tf_value = 1+math.log(float(doc_content.count(self.term_id)),10)
 
         self.tf[doc_id] = tf_value
+
+    def _getposition(self, doc_id, docs):
+
+        doc_content = term.terminator(docs[doc_id].tokens.tokenized)
+
+        if self.term_id not in doc_content:
+
+            pass
+
+        else:
+
+            for term_position in xrange(len(doc_content)):
+
+                if doc_content[term_position] == self.term_id:
+
+                    if doc_id in self.position:
+
+                        self.position[doc_id].append(term_position)
+
+                    else:
+
+                        self.position[doc_id] = [term_position]
 
 
 
