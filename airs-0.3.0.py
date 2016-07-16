@@ -138,7 +138,13 @@ class InvertedIndex(object):
 
             print "\nStart ranking of documents\n"
 
-            self.eval_ranking()
+            if self.userargs.eval == 'bool':
+
+                self.eval_bool()
+
+            elif self.userargs.eval == 'tfidf' or self.userargs.eval == 'prox':
+
+                self.eval_ranking()
 
             print "\nRanking of documents finished\n"
 
@@ -187,6 +193,62 @@ class InvertedIndex(object):
                 print '\nError: Could not recognize input.\nPlease type "yes" or "y" if you wish to continue and "no" or "n" if you wish to quit the program.\n'
                 continue
 
+    def eval_bool(self):
+
+        precision_total = []
+        recall_total = []
+
+        try:
+
+            golddata = read_golddata('golddata.txt')
+
+        except IOError:
+
+            golddata = read_golddata('../golddata.txt')
+
+        queries = golddata.keys()
+
+        query_list=[]
+
+        for query in queries:
+
+            query = Query(query,'automatic')
+            query_list.append(query)
+
+        for query in query_list:
+
+            print '\nQuery: '+str(query.userinput)+'\n'
+
+            postingslists = query.return_postingslist(query.terms, self.inv_index)
+
+            intersection = query.logical_and(postingslists)
+
+            gold_docs = golddata[query.userinput]
+
+            tp,fp,fn,tn = confusion_matrix(gold_docs,intersection.postingslist)
+
+            precision = compute_precision(tp,fp)
+            print 'Precision:',precision
+            recall = compute_recall(tp,fn)
+            print 'Recall:',recall
+            f1 = compute_f1(precision,recall)
+            print 'F1-Score:',f1
+
+            precision_total.append(precision)
+            recall_total.append(recall)
+
+        precision_avg = float(sum(filter(None,precision_total)))/len(filter(None,precision_total))
+        recall_avg = float(sum(filter(None,recall_total)))/len(filter(None,recall_total))
+
+
+        print
+        print 'Average precision:', precision_avg
+        print 'Average recall:', recall_avg
+
+        f1_total = compute_f1(precision_avg,recall_avg)
+
+        print 'F1-Score:',f1_total
+
 
     def eval_ranking(self):
 
@@ -228,19 +290,7 @@ class InvertedIndex(object):
 
             totalpred=ranking.ranking.index.values.tolist()
             gold_docs = golddata[query.userinput]
-            gold_docs0=[]
-            gold_docs1=[]
 
-            for key in gold_docs:
-                if key[1]=="0":
-                    gold_docs0.append(key)
-                else:
-                    gold_docs1.append(key)
-            
-
-            #print gold_docs0
-            #print
-            #print gold_docs1
             for i in xrange(1,len(ranking.ranking),1):
 
                 prediction = totalpred[:i]
@@ -250,10 +300,11 @@ class InvertedIndex(object):
                #     prediction.append(index)
 
 
-                tp,fp,fn,tn,spec = confusion_matrix(gold_docs,prediction)
+                tp,fp,fn,tn = confusion_matrix(gold_docs,prediction)
 
                 precision_value = compute_precision(tp,fp)
                 precision.append(precision_value)
+                spec = compute_specificity(fp,tn)
                 specificity.append(spec)
                 recall_value = compute_recall(tp,fn)
                 recall.append(recall_value)
@@ -365,7 +416,7 @@ class InvertedIndex(object):
             plt.xlabel('1-Specificity')
             plt.ylabel('Sensitivity')
             plt.title("ROC graph for query '"+str(query.userinput)+"'")
-            
+
             try:
 
                 plt.savefig("graphs/roc_"+str(query.userinput).replace(' ','_')+".png", bbox_inches='tight')
@@ -385,7 +436,7 @@ class InvertedIndex(object):
             plt.ylabel('Precision')
             plt.title("Precision-Recall graph for query '"+str(query.userinput)+"'")
             plt.legend(handles=[prec_recall_plot,eleven_prec_recall_plot])
-            
+
             try:
 
                 plt.savefig("graphs/precrec_"+str(query.userinput).replace(' ','_')+".png", bbox_inches='tight')
@@ -406,7 +457,7 @@ class InvertedIndex(object):
             eleven_precision_total.append(eleven_prec)
 
             # For each recall in the query eval store the corresponding precision value
-            
+
             for rec_id in xrange(len(recall)):
 
                 if recall[rec_id] in precision_recall_total:
@@ -418,7 +469,7 @@ class InvertedIndex(object):
                     precision_recall_total[recall[rec_id]] = [precision[rec_id]]
 
             # Store specificity for 1-Specificity values for each query
-                    
+
             for spec_id in xrange(len(recall)):
 
                 if recall[spec_id] in specificity_total:
@@ -429,13 +480,13 @@ class InvertedIndex(object):
 
                     specificity_total[recall[spec_id]] = [specificity[spec_id]]
 
-            
+
 
 
         # Calculate the average overall precision
 
         precision_average = {}
-        
+
         for rec in precision_recall_total:
 
             if rec == None:
@@ -444,7 +495,7 @@ class InvertedIndex(object):
 
             else:
 
-                
+
                 if precision_recall_total[rec] == [None]:
 
                     continue
@@ -467,16 +518,16 @@ class InvertedIndex(object):
 
             rec_tmp.append(rec)
             prec_tmp.append(precision_average[rec])
-        
+
 
         total_prec_recall, = plt.plot(rec_tmp,prec_tmp,'b-', label="overall precision-recall")
         plt.xlabel('Recall')
         plt.ylabel('Precision')
         plt.title("Precision-Recall graph for all queries")
 
-            
+
         # Calculate the average 11-point precision
-            
+
         eleven_precision_average = {}
 
         for pres in eleven_precision_total:
@@ -503,7 +554,7 @@ class InvertedIndex(object):
             rec_tmp.append(rec)
             prec_tmp.append(eleven_precision_average[rec])
 
-        
+
 
         total_eleven_prec_recall, = plt.plot(rec_tmp,prec_tmp,'r-', label="11-point precision-recall")
         plt.legend(handles=[total_prec_recall,total_eleven_prec_recall])
@@ -558,7 +609,7 @@ class InvertedIndex(object):
         plt.xlabel('1-Specificity')
         plt.ylabel('Sensitivity')
         plt.title("ROC graph for all queries")
-            
+
         try:
 
             plt.savefig("graphs/total_roc.png", bbox_inches='tight')
@@ -570,7 +621,7 @@ class InvertedIndex(object):
             print "\nStored graph in ../graphs/total_roc.png\n"
 
         plt.close()
-            
+
         print 'System 11-point-precision'
         for rec in sorted(eleven_precision_average.keys()):
             print rec,'\t',eleven_precision_average[rec]
@@ -639,11 +690,6 @@ class InvertedIndex(object):
                     self.inv_index[term]=postingslist
                     #print (term,self.inv_index[term].postingslist)
 
-        for term in self.inv_index:
-
-            print term
-            print self.inv_index[term].position
-
 
 
         if self.userargs.store:
@@ -673,9 +719,11 @@ def get_user_args(args):
     ap.add_argument('-c', '--corpus', metavar='PATH', type=str, default='./amazon_reviews',
                     help='specify a path for corpus files. Default is ./amazon_reviews')
     ap.add_argument('-rand', '--random', metavar='N',
-                    help='specify number of randomized documents used for the inverted index. Default is 100 files. If all documents should be considered, type -r all')
+                    help='specify number of randomized documents used for the inverted index. If all documents should be considered, type -r all')
     ap.add_argument('-rank', '--ranking', metavar='N',
                     help='specify upper bound for documents to be ranked')
+    ap.add_argument('-e', '--eval', metavar='SYSTEM', choices=['bool','tfidf','prox'],
+                    help='specifiy on which system you want to perform the evaluation. Possible values are bool, tfidf and prox.')
     ap.add_argument('-s', '--store', action='store_true',
                     help='activate this flag if you want to store the inverted index into a pickle file')
     ap.add_argument('-p', '--pickle', action='store_true',

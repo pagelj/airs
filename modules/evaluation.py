@@ -68,7 +68,7 @@ def confusion_matrix(gold,pred):
     templst=temp1+temp2
     #print "\nTemplist\n",templst
     total=len(set(templst))
- 
+
     gold_relevant = []
 
 
@@ -91,12 +91,10 @@ def confusion_matrix(gold,pred):
             fp += 1
 
     fn = len(gold_relevant)
+
     tn=total-(tp+fn+fp)
-    spec=1-(float(tn)/(fp+tn))
 
-
-    return tp,fp,fn,tn,spec
-
+    return tp,fp,fn,tn
 
 def compute_precision(tp,fp):
 
@@ -122,6 +120,18 @@ def compute_recall(tp,fn):
         recall = None
 
     return recall
+
+def compute_specificity(fp,tn):
+
+    try:
+
+        spec = 1-(float(tn)/(fp+tn))
+
+    except ZeroDivisionError:
+
+        spec = None
+
+    return spec
 
 
 def compute_f1(precision,recall):
