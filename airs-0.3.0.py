@@ -176,7 +176,7 @@ class InvertedIndex(object):
                 print '\nYour queried word(s) occur in the following document(s):'
                 print
 
-                ranking=Ranking(query,self.inv_index,self.corpussize)
+                ranking=Ranking(query,self.inv_index,self.corpussize,self.userargs)
 
                 for doc_id in ranking.ranking.index[:top_rank]:
 
@@ -257,6 +257,14 @@ class InvertedIndex(object):
         precision_recall_total = {}
         specificity_total = {}
 
+        if self.userargs.eval == 'tfidf':
+
+            graph_path = 'graphs_tfidf/'
+
+        elif self.userargs.eval == 'prox':
+
+            graph_path = 'graphs_prox/'
+
         try:
 
             golddata = read_golddata('golddata.txt')
@@ -283,7 +291,7 @@ class InvertedIndex(object):
             specificity=[]
             recall = []
 
-            ranking=Ranking(query,self.inv_index,self.corpussize)
+            ranking=Ranking(query,self.inv_index,self.corpussize,self.userargs)
             print "\nRanking\n"
             print ranking.ranking
             print '\n'
@@ -419,13 +427,13 @@ class InvertedIndex(object):
 
             try:
 
-                plt.savefig("graphs/roc_"+str(query.userinput).replace(' ','_')+".png", bbox_inches='tight')
-                print "\nStored graph in "+"graphs/roc_"+str(query.userinput).replace(' ','_')+".png\n"
+                plt.savefig(graph_path+"roc_"+str(query.userinput).replace(' ','_')+".png", bbox_inches='tight')
+                print "\nStored graph in "+graph_path+"roc_"+str(query.userinput).replace(' ','_')+".png\n"
 
             except IOError:
 
-                plt.savefig("../graphs/roc_"+str(query.userinput).replace(' ','_')+".png", bbox_inches='tight')
-                print "\nStored graph in "+"../graphs/roc_"+str(query.userinput).replace(' ','_')+".png\n"
+                plt.savefig("../"+graph_path+"roc_"+str(query.userinput).replace(' ','_')+".png", bbox_inches='tight')
+                print "\nStored graph in "+"../"+graph_path+"roc_"+str(query.userinput).replace(' ','_')+".png\n"
 
             plt.close()
 
@@ -439,13 +447,13 @@ class InvertedIndex(object):
 
             try:
 
-                plt.savefig("graphs/precrec_"+str(query.userinput).replace(' ','_')+".png", bbox_inches='tight')
-                print "\nStored graph in "+"graphs/precrec_"+str(query.userinput).replace(' ','_')+".png\n"
+                plt.savefig(graph_path+"precrec_"+str(query.userinput).replace(' ','_')+".png", bbox_inches='tight')
+                print "\nStored graph in "+graph_path+"precrec_"+str(query.userinput).replace(' ','_')+".png\n"
 
             except IOError:
 
-                plt.savefig("../graphs/precrec_"+str(query.userinput).replace(' ','_')+".png", bbox_inches='tight')
-                print "\nStored graph in "+"../graphs/precrec_"+str(query.userinput).replace(' ','_')+".png\n"
+                plt.savefig("../"+graph_path+"precrec_"+str(query.userinput).replace(' ','_')+".png", bbox_inches='tight')
+                print "\nStored graph in "+"../"+graph_path+"precrec_"+str(query.userinput).replace(' ','_')+".png\n"
 
             plt.close()
 
@@ -523,7 +531,7 @@ class InvertedIndex(object):
         total_prec_recall, = plt.plot(rec_tmp,prec_tmp,'b-', label="overall precision-recall")
         plt.xlabel('Recall')
         plt.ylabel('Precision')
-        plt.title("Precision-Recall graph for all queries")
+        #plt.title("Precision-Recall graph for all queries")
 
 
         # Calculate the average 11-point precision
@@ -556,18 +564,18 @@ class InvertedIndex(object):
 
 
 
-        total_eleven_prec_recall, = plt.plot(rec_tmp,prec_tmp,'r-', label="11-point precision-recall")
+        total_eleven_prec_recall, = plt.plot(rec_tmp,prec_tmp,'rs', label="11-point precision-recall")
         plt.legend(handles=[total_prec_recall,total_eleven_prec_recall])
 
         try:
 
-            plt.savefig("graphs/total_precrec.png", bbox_inches='tight')
-            print "\nStored graph in graphs/total_precrec.png\n"
+            plt.savefig(graph_path+"total_precrec.png", bbox_inches='tight')
+            print "\nStored graph in "+graph_path+"total_precrec.png\n"
 
         except IOError:
 
-            plt.savefig("../graphs/total_precrec.png", bbox_inches='tight')
-            print "\nStored graph in ../graphs/total_precrec.png\n"
+            plt.savefig("../"+graph_path+"total_precrec.png", bbox_inches='tight')
+            print "\nStored graph in ../"+graph_path+"total_precrec.png\n"
 
         plt.close()
 
@@ -608,17 +616,17 @@ class InvertedIndex(object):
         plt.plot(spec_tmp,rec_tmp,'b-',label='overall ROC')
         plt.xlabel('1-Specificity')
         plt.ylabel('Sensitivity')
-        plt.title("ROC graph for all queries")
+        #plt.title("ROC graph for all queries")
 
         try:
 
-            plt.savefig("graphs/total_roc.png", bbox_inches='tight')
-            print "\nStored graph in graphs/total_roc.png\n"
+            plt.savefig(graph_path+"total_roc.png", bbox_inches='tight')
+            print "\nStored graph in "+graph_path+"total_roc.png\n"
 
         except IOError:
 
-            plt.savefig("../graphs/total_roc.png", bbox_inches='tight')
-            print "\nStored graph in ../graphs/total_roc.png\n"
+            plt.savefig("../"+graph_path+"total_roc.png", bbox_inches='tight')
+            print "\nStored graph in ../"+graph_path+"total_roc.png\n"
 
         plt.close()
 

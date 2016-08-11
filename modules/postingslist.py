@@ -62,9 +62,6 @@ class Postingslist(object):
 
             self.postingslist_len = len(self.postingslist)
 
-    def getPostingsList(self):
-
-        return self.postingslist
 
     def _gettf(self, doc_id, docs):
 

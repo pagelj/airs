@@ -13,9 +13,7 @@ Summer Term 16
 
 """
 
-#from modules.parsedoc import *
 from tokenizer import *
-from query import *
 from term import *
 
 class Document(object):
