@@ -9,7 +9,7 @@ Contributors: Prajit Dhar, Janis Pagel
 University of Stuttgart
 Institute for Natural Language Processing
 Summer Term 16
-04/11/2016
+08/12/2016
 
 """
 
@@ -33,10 +33,15 @@ class Tokenizer(object):
         Create object for storing tokenized text
         """
         self.text = text
+
         #self.tokenized = self._simple_tokenize(self.text)
         self.tokenized = self._complex_tokenize(self.text)
 
+        # Ensure that all punctuations are separated.
+        # Before sometimes punctuations remained because
+        # of unpredictable contexts.
         second_tokenization = []
+
         for token in self.tokenized:
 
             second_tokenization.append(self._complex_tokenize(token)[0])
@@ -53,11 +58,6 @@ class Tokenizer(object):
 
         return str(self.tokenized)
 
-    def _tokenlist(self):
-
-        # getter function
-
-        return self.tokenized
 
     def _simple_tokenize(self, text):
 

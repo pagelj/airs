@@ -1,22 +1,23 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Jun  9 15:09:40 2016
+#!/usr/bin/env python2.7
 
-@author: prajitdhar
+# coding=utf-8
+
+"""
+Awesome Information Retrieval System (AIRS) - Evaluation
+
+Contributors: Prajit Dhar, Janis Pagel
+University of Stuttgart
+Institute for Natural Language Processing
+Summer Term 16
+08/12/2016
+
 """
 
 from ranking import *
 from query import *
+from auxiliary_functions import natural_sortkey
 import pandas as pd
 import random as rd
-
-def natural_sortkey(string):
-
-    # Function for sorting integer parts of
-    # a string
-
-    tokenize = re.compile(r'(\d+)|(\D+)').findall
-    return tuple(int(num) if num else alpha for num, alpha in tokenize(string))
 
 def read_golddata(path):
 

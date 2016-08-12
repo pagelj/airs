@@ -1,6 +1,8 @@
 """
 Source: https://bitbucket.org/mchaput/stemming/src/5c242aa592a6d4f0e9a0b2e1afdca4fd757b8e8a/stemming/porter.py?at=default&fileviewer=file-view-default
 
+-------------------------------------------------------------------------------------------
+
 Reimplementation of the
 `Porter stemming algorithm <http://tartarus.org/~martin/PorterStemmer/>`_
 in Python.
@@ -34,7 +36,7 @@ _step2list = {
               "aliti": "al",
               "iviti": "ive",
               "biliti": "ble",
-              "logi": "log",          
+              "logi": "log",
               }
 
 _step3list = {
@@ -44,7 +46,7 @@ _step3list = {
               "iciti": "ic",
               "ical": "ic",
               "ful": "",
-              "ness": "",          
+              "ness": "",
               }
 
 
@@ -80,17 +82,17 @@ _step5 = re.compile("^(.+?)e$")
 def stem(w):
     """Uses the Porter stemming algorithm to remove suffixes from English
     words.
-    
+
     >>> stem("fundamentally")
     "fundament"
     """
-    
+
     if len(w) < 3: return w
-    
+
     first_is_y = w[0] == "y"
     if first_is_y:
         w = "Y" + w[1:]
-        
+
     # Step 1a
     if w.endswith("s"):
         if w.endswith("sses"):
@@ -99,9 +101,9 @@ def stem(w):
             w = w[:-2]
         elif w[-2] != "s":
             w = w[:-1]
-    
+
     # Step 1b
-    
+
     if w.endswith("eed"):
         s = w[:-3]
         if _mgr0.match(s):
@@ -118,25 +120,25 @@ def stem(w):
                     w = w[:-1]
                 elif _c_v.match(w):
                     w += "e"
-            
+
     # Step 1c
-    
+
     if w.endswith("y"):
         stem = w[:-1]
         if _s_v.match(stem):
             w = stem + "i"
-            
+
     # Step 2
-    
+
     m = _step2.match(w)
     if m:
         stem = m.group(1)
         suffix = m.group(2)
         if _mgr0.match(stem):
             w = stem + _step2list[suffix]
-            
+
     # Step 3
-    
+
     m = _step3.match(w)
     if m:
         stem = m.group(1)
@@ -145,7 +147,7 @@ def stem(w):
             w = stem + _step3list[suffix]
 
     # Step 4
-    
+
     m = _step4_1.match(w)
     if m:
         stem = m.group(1)
@@ -157,18 +159,18 @@ def stem(w):
             stem = m.group(1) + m.group(2)
             if _mgr1.match(stem):
                 w = stem
-    
+
     # Step 5
-    
+
     m = _step5.match(w)
     if m:
         stem = m.group(1)
         if _mgr1.match(stem) or (_meq1.match(stem) and not _c_v.match(stem)):
             w = stem
-    
+
     if w.endswith("ll") and _mgr1.match(w):
         w = w[:-1]
-    
+
     if first_is_y:
         w = "y" + w[1:]
 

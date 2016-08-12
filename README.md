@@ -6,51 +6,78 @@
 
 -  Janis Pagel
 
-## Output for first upload
-
-The output for our index and a sample query is stored in output.txt
-
 ## Goal
 
-Create a fully functional Information Retrieval System, including Indexing, Query Support, Ranking, Evaluation and Crawling
+Create a fully functional Information Retrieval System, including Indexing, Interactive Query Mode, Ranking and Evaluation.
 
 ## Usage
 
 Start the system by typing
 
 ```sh
-python airs-0.3.0.py
+python airs-1.0.0.py [OPTIONS]
 ```
 
-You are asked to enter your query. The output is a list of all documents, the query words occur in.
-
-By now only boolean query is implemented, i.e. only documents in which all entered words occur are considered.
-
-For testing purposes, only 10 randomly chosen documents are taken into account.
+If you don't specify any options, the systems runs in an empty run without indexing any documents.
+Please specify the number of documents you want to index and evaluate on using *-rand* or *-rank*.
 
 ## Options
 
-You may specify several flags to individualize your indexing:
+You may specify several flags to individualize your indexing and evaluation:
 
 ```sh
-python airs-0.3.0.py [-c PATH] [-r N] [-s] [-p]
+python airs-1.0.0.py [-c PATH] [-rand N] [-rank N] [-s] [-p] [-e SYSTEM] [-i] [--version] [-h]
 ```
 
-### -c
+### -c / --corpus
 
-specify a path for corpus files. Default is ./amazon_reviews
+Specify a path for corpus files. Default is ./amazon_reviews
 
-### -r
+### -rand / --random
 
-specify number of randomized documents used for the inverted index. Default is 100 files. If all documents should be considered, type -r all
+Specify a number of randomized documents used for the inverted index.
 
-### -s
+### -rank / --ranking
 
-activate this flag if you want to store the inverted index into a pickle file
+Specify the number of documents which should be ranked.
 
-### -p
+The selection will start at the document with index 0; the specified number is the excluded upper bound. For example for the first 2000 documents to index and rank, give *-rank 2000*.
 
-activate this flag if you wish to read the inverted index from a stored pickle file
+### -s / --store
+
+Activate this flag if you want to store the inverted index into a pickle file.
+
+### -p / --pickle
+
+Activate this flag if you wish to read the inverted index from a stored pickle file.
+This only works if there is an existing inverted index pickle file.
+
+### -e / --eval
+
+Specify which system you would like to evaluate. Type *-e bool* to evaluate the
+boolean system, *-e tfidf* to evaluate the TF-IDF system and *-e prox* to evaluate
+the proximity system. The default is *-e tfidf*.
+
+### -i / --interactive
+
+Activate this flag if you want to start an interactive session. This works together
+with all flags.
+
+You can use the *-e* flag to specify how the result for the query
+should be ranked. Hence in this case the *-e* flag will not give an evaluation but
+the system used for ranking for the interactive session. The default of *-e* is *tfidf*.
+*-e bool* will return all found documents, *-e tfidf* and *-e prox* will return the 10
+highest ranked documents.
+
+You are asked to enter a query and will get the result displayed in the terminal.
+
+### --version
+
+Shows the version number.
+
+### -h / --help
+
+Shows information about the different flags and their usage.
 
 ## Data
 
@@ -58,7 +85,7 @@ The used data base is a collection of 10,000 Amazon reviews, stored in /amazon_r
 
 ## Classes
 
-### airs-0.3.0.py
+### airs-1.0.0.py
 
 Main class, running the system and combine the different modules of the code.
 
@@ -93,9 +120,26 @@ Class for performing user queries and performing query processing and parsing
 
 ### modules/ranking.py
 
-Class for ranking, at the moment based on cosine similarity. The class provides
-a sorted list of output documents for a query, based on the cosine ranking.
+Class for ranking based on cosine similarity or proximity. The class provides
+a sorted list of output documents for a query, based on the cosine ranking or
+the proximity ranking.
 
-### Not listed Classes
+### modules/evaluation.py
 
-Classes which are not listed here, are not used by now resp. will be used in future applications.
+Class which entails functions for the evaluation process.
+
+### modules/porter.py
+
+A free porter stemmer, used from https://bitbucket.org/mchaput/stemming/src/5c242aa592a6d4f0e9a0b2e1afdca4fd757b8e8a/stemming/porter.py?at=default&fileviewer=file-view-default
+
+### Not listed modules/classes
+
+Classes which are not listed here are not used for now or will be used in future applications.
+
+## Gold Annotations
+
+The gold data is stored in the file golddata.txt.
+
+## Output for first submission (09. May 2016)
+
+The output for our index and a sample query is stored in output.txt

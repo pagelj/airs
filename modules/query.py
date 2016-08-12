@@ -9,28 +9,24 @@ Contributors: Prajit Dhar, Janis Pagel
 University of Stuttgart
 Institute for Natural Language Processing
 Summer Term 16
-04/11/2016
+08/12/2016
 
 """
 
 import re
 from postingslist import *
 from porter import *
+from auxiliary_functions import natural_sortkey
 
-
-def natural_sortkey(string):
-
-    # Function for sorting integer parts of
-    # a string
-
-    tokenize = re.compile(r'(\d+)|(\D+)').findall
-    return tuple(int(num) if num else alpha for num, alpha in tokenize(string))
 
 pattern = r'[& ]'
 
 class Query(object):
 
     def __init__(self,query_input,query_type):
+
+        # Distinguish between the interactive mode
+        # and the automatic evaluation of the systems.
 
         if query_type == 'interactive':
 
@@ -50,11 +46,16 @@ class Query(object):
 
     def process_query(self,query_input):
 
+        # Return the tokens of the query.
+
         query_split = re.split(pattern,query_input)
 
         return query_split
 
     def return_postingslist(self, query, terms):
+
+        # Return the postingslist of the query terms
+        # as a postingslists object.
 
         postingslists = []
 
@@ -74,14 +75,17 @@ class Query(object):
 
     def logical_and(self, postingslists):
 
-        # intersect all postingslists of the entered query words
+        # Intersect all postingslists of the entered query words.
+        # Return all intersections as postingslists objects.
 
+        # If there are no postingslists, return nothing.
         if len(postingslists) == 0:
 
             intersection = Postingslist('','')
 
             return intersection
 
+        # If there is only one postingslist, return it.
         elif len(postingslists) == 1:
 
             intersection = Postingslist('','')
@@ -89,14 +93,19 @@ class Query(object):
 
             return intersection
 
+        # If there are two or more postingslists:
         else:
 
+            # Iterate over the postingslists. If there
+            # are only two postingslists, intersect them.
             postingslist1=postingslists.pop(0)
 
             postingslist2=postingslists.pop(0)
 
             intersection = set(postingslist1.postingslist).intersection(set(postingslist2.postingslist))
 
+            # As long as there are more than two postingslists, intersect them
+            # with the current intersection status.
             while postingslists != []:
 
                 postingslist3=postingslists.pop(0)

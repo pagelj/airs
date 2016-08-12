@@ -9,7 +9,7 @@ Contributors: Prajit Dhar, Janis Pagel
 University of Stuttgart
 Institute for Natural Language Processing
 Summer Term 16
-04/11/2016
+08/12/2016
 
 """
 
@@ -21,6 +21,7 @@ import os
 import re
 import random as r
 from evaluation import *
+from auxiliary_functions import natural_sortkey
 
 
 ################################################
@@ -35,15 +36,6 @@ for list in gold_tupels:
         gold_docs.append(int(tupel[0].rstrip('.txt')))
 
 
-def natural_sortkey(string):
-
-    # Function for sorting integer parts of
-    # a string
-
-    tokenize = re.compile(r'(\d+)|(\D+)').findall
-    return tuple(int(num) if num else alpha for num, alpha in tokenize(string))
-
-
 class Parsedoc(object):
 
     """
@@ -52,20 +44,24 @@ class Parsedoc(object):
     """
 
     def __init__(self, directory, userargs):
-        
+
         # Store the directory
         self.directory = directory
+        
         # Store the output of filereader as the content and the docid
         self.content, self.docid = self.filereader(self.directory, userargs)
 
     def filereader(self, directory, userargs):
 
         r.seed(20)
+
         # store is a list to hold the file contents
         store=[]
         tempstore=[]
+
         # names is a list to hold the file names
         names=[]
+
         # The below code will traverse the given directory and store all the file names in it
         os.chdir(directory)
         for dirpath, dirs, files in os.walk('.'):
@@ -73,9 +69,10 @@ class Parsedoc(object):
 
 
         files = sorted(files, key=natural_sortkey)
+
         #choices will store the random N files we will use in the experiment
         if userargs.random:
-        
+
             if userargs.random == 'all':
 
                 N = len(files)
@@ -85,7 +82,6 @@ class Parsedoc(object):
                 N = int(userargs.random)
 
             choices=r.sample(xrange(len(files)),N)
-            #choices=gold_docs
 
             for x in choices:
                 with open(files[x]) as inp_data:

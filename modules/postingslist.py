@@ -9,30 +9,28 @@ Contributors: Prajit Dhar, Janis Pagel
 University of Stuttgart
 Institute for Natural Language Processing
 Summer Term 16
-04/11/2016
+08/12/2016
 
 """
 
 import re
 import term
 import math
+from auxiliary_functions import natural_sortkey
 
 ################################################
 ##################### Classes ##################
 ################################################
 
-def natural_sortkey(string):
-
-    # Function for sorting integer parts of
-    # a string
-
-    tokenize = re.compile(r'(\d+)|(\D+)').findall
-    return tuple(int(num) if num else alpha for num, alpha in tokenize(string))
 
 class Postingslist(object):
 
+    # class for representing a postingslist.
+
     def __init__(self, term_id, docs):
 
+        # Store the connected term, the documents, the term
+        # frequency and the positions of the term.
         self.docs = docs
         self.term_id = term_id
         self.postingslist = []
@@ -46,24 +44,32 @@ class Postingslist(object):
 
     def _update_postingslist(self, doc_id):
 
+        # While creating or updating the inverted index, this
+        # function constantly updates the postingslist for
+        # a given term.
+
+        # This distinction is necessary to check
+        # if the input is a document ID as a string
+        # or as a list containing this document ID, as
+        # both appears.
         if isinstance(doc_id, basestring):
 
             self.postingslist.append(doc_id)
-
-            self.postingslist = sorted(list(set(self.postingslist)), key=natural_sortkey)
-
-            self.postingslist_len = len(self.postingslist)
 
         else:
 
             self.postingslist.extend(doc_id)
 
-            self.postingslist = sorted(list(set(self.postingslist)), key=natural_sortkey)
+        self.postingslist = sorted(list(set(self.postingslist)), key=natural_sortkey)
 
-            self.postingslist_len = len(self.postingslist)
+        self.postingslist_len = len(self.postingslist)
 
 
     def _gettf(self, doc_id, docs):
+
+        # Function for getting the term frequency
+        # during the creation of the inverted index
+        # or later updates.
 
         doc_content = term.terminator(docs[doc_id].tokens.tokenized)
 
@@ -78,6 +84,11 @@ class Postingslist(object):
         self.tf[doc_id] = tf_value
 
     def _getposition(self, doc_id, docs):
+
+        # Function for getting the positions of the term
+        # in its documents
+        # during the creation of the inverted index
+        # or later updates.
 
         doc_content = term.terminator(docs[doc_id].tokens.tokenized)
 

@@ -9,13 +9,11 @@ Contributors: Prajit Dhar, Janis Pagel
 University of Stuttgart
 Institute for Natural Language Processing
 Summer Term 16
-04/11/2016
-
-v 0.3.0
+08/12/2016
 
 """
 
-__version__ = 'v 0.3.0'
+__version__ = 'v 1.0.0'
 
 #################################################
 ######################### Import ################
@@ -45,8 +43,7 @@ import matplotlib.pyplot as plt
 ################################################
 
 
-
-class InvertedIndex(object):
+class System(object):
 
     # Class for managing and coordinating all the different components
 
@@ -55,7 +52,6 @@ class InvertedIndex(object):
         # get user arguments
 
         self.userargs = userargs
-
 
         # Store the inverted index into a pickle file
         # if requested by the user
@@ -112,12 +108,15 @@ class InvertedIndex(object):
 
             print "\nReading in of corpus finished\n"
 
+            # Create the terms for the inverted index
 
             print "\nCreate terms\n"
 
             self._create_terms()
 
             print "\nTerms created\n"
+
+            # Create the inverted index
 
             print "\nStart creating the inverted index\n"
 
@@ -128,7 +127,8 @@ class InvertedIndex(object):
 
         # Run interactive query if set by
         # user, else run ranking on given queries from
-        # the gold standard
+        # the gold standard.
+
         if self.userargs.interactive:
 
             self.interactive_query()
@@ -137,6 +137,9 @@ class InvertedIndex(object):
 
 
             print "\nStart ranking of documents\n"
+
+            # Call evaluation function depending on the system
+            # the user wants to evaluate.
 
             if self.userargs.eval == 'bool':
 
@@ -149,23 +152,117 @@ class InvertedIndex(object):
             print "\nRanking of documents finished\n"
 
 
+    def _create_terms(self):
+
+        # Function for creating the terms.
+
+        self.docs={}
+        self.termsdict={}
+
+        # Iterate over all documents and
+        # create term objects out of the
+        # document content.
+
+        for name,document in self.doc_obj.items():
+
+            doc=Document(document)
+            self.docs[name]=doc
+            term=Term(doc.tokens)
+            self.termsdict[name]=term
+
+        self.terms = self.termsdict.values()
+
+        self.corpussize = len(self.docs.keys())
+
+        filename_terms='terms'
+        filename_docs='docs'
+        path='../'
+
+        # Store the terms if the user wants to.
+
+        if self.userargs.store:
+
+            with open(path.strip()+filename_terms.strip()+'.pkl','wb') as fp:
+
+                pickle.dump(self.terms, fp)
+
+            print "\nStored terms into " + str(filename_terms) + ".pkl\n"
+
+            with open(path.strip()+filename_docs.strip()+'.pkl','wb') as fp:
+
+                pickle.dump(self.docs, fp)
+
+            print "\nStored documents into " + str(filename_docs) + ".pkl\n"
 
 
+    def _create_inv_index(self):
+
+        # Function for creating the inverted index.
+
+        self.inv_index={}
+
+        # Iterate over all terms.
+
+        for name,terms in self.termsdict.items():
+
+            for term in terms.terms:
+
+                # Update the postingslist for every new document the term
+                # occurs in as well as the term frequency for that document
+                # and the position(s) of the term in it.
+
+                if term in self.inv_index:
+
+                    self.inv_index[term]._update_postingslist(name)
+                    self.inv_index[term]._gettf(name,self.docs)
+                    self.inv_index[term]._getposition(name,self.docs)
+
+                else:
+
+                    postingslist = Postingslist(term,self.docs)
+                    postingslist._update_postingslist(name)
+                    postingslist._gettf(name,self.docs)
+                    postingslist._getposition(name,self.docs)
+                    self.inv_index[term]=postingslist
 
 
+        # Store the inverted index if the user wants to.
+
+        if self.userargs.store:
+
+            filename='inverted_index'
+            path='../'
+
+            with open(path.strip()+filename.strip()+'.pkl','wb') as fp:
+
+                pickle.dump(self.inv_index, fp)
+
+            print "\nStored inverted index into " + str(filename) + ".pkl\n"
 
 
     def interactive_query(self):
 
-        top_rank = 5
+        # Function to realize an interactive query interface.
+
+
+        # Return the N most highest ranked documents to the user.
+        top_rank = 10
 
         while 1:
 
+            # Initialize an empty query
+            # that is filled with the user input.
             query = Query('','interactive')
 
+            # Get the postingslists of the query words.
             postingslists = query.return_postingslist(query.terms, self.inv_index)
 
+            # Get the intersection of the postingslists.
             intersection = query.logical_and(postingslists)
+
+            # First check if the query words occur in the collection
+            # using boolean search. If not return a message that
+            # the search was not successful.
 
             if intersection.postingslist == []:
 
@@ -176,14 +273,31 @@ class InvertedIndex(object):
                 print '\nYour queried word(s) occur in the following document(s):'
                 print
 
-                ranking=Ranking(query,self.inv_index,self.corpussize,self.userargs)
+                if self.userargs.eval == 'bool':
 
-                for doc_id in ranking.ranking.index[:top_rank]:
+                    for doc_id in intersection.postingslist:
 
-                    print
-                    print doc_id
-                    print Document.snippet(self.docs[doc_id],query)
+                        print
+                        print doc_id
+                        print
+                        print Document.snippet(self.docs[doc_id],query)
 
+                elif self.userargs.eval == 'tfidf' or self.userargs.eval == 'prox':
+
+                    # If at least one query word occured, rank the documents using
+                    # either tf-idf or prximity ranking (Can be specified in the ranking class).
+                    ranking=Ranking(query,self.inv_index,self.corpussize,self.userargs)
+
+                    # Return the top N ranked documents and snippets of the context the search
+                    # words occured in.
+                    for doc_id in ranking.ranking.index[:top_rank]:
+
+                        print
+                        print doc_id
+                        print
+                        print Document.snippet(self.docs[doc_id],query)
+
+            # Ask the user if they would like to continue.
             userinput = str(raw_input('\n\nIf you would like to continue type "yes" or "y".\nType "no" or "n" to quit the program.\n\n'))
             if userinput in ("no","n"):
                 sys.exit("\nProgram quiting\n")
@@ -195,8 +309,12 @@ class InvertedIndex(object):
 
     def eval_bool(self):
 
+        # Function for evaluating the boolean system.
+
         precision_total = []
         recall_total = []
+
+        # Get the gold data.
 
         try:
 
@@ -206,14 +324,20 @@ class InvertedIndex(object):
 
             golddata = read_golddata('../golddata.txt')
 
+        # Get the queries from the gold data.
         queries = golddata.keys()
 
         query_list=[]
 
+        # Convert the query strings to query objects.
         for query in queries:
 
             query = Query(query,'automatic')
             query_list.append(query)
+
+        # Perform the boolean search using logical and
+        # and evaluate the output of the intersection
+        # for every single query and for the whole system.
 
         for query in query_list:
 
@@ -237,6 +361,8 @@ class InvertedIndex(object):
             precision_total.append(precision)
             recall_total.append(recall)
 
+        # None values are filtered out since the evaluation functions return None
+        # if there is a division by 0.
         precision_avg = float(sum(filter(None,precision_total)))/len(filter(None,precision_total))
         recall_avg = float(sum(filter(None,recall_total)))/len(filter(None,recall_total))
 
@@ -251,6 +377,9 @@ class InvertedIndex(object):
 
 
     def eval_ranking(self):
+
+        # Function for evaluating the systems
+        # tf-idf and prox.
 
         spec_total_list=[]
         eleven_precision_total = []
@@ -636,86 +765,6 @@ class InvertedIndex(object):
         print '\n'
 
 
-
-
-    def _create_terms(self):
-
-        self.docs={}
-        self.termsdict={}
-
-        for name,document in self.doc_obj.items():
-
-            doc=Document(document)
-            self.docs[name]=doc
-            term=Term(doc.tokens)
-            self.termsdict[name]=term
-
-        self.terms = self.termsdict.values()
-
-        self.corpussize = len(self.docs.keys())
-
-        filename_terms='terms'
-        filename_docs='docs'
-        path='../'
-
-        if self.userargs.store:
-
-            with open(path.strip()+filename_terms.strip()+'.pkl','wb') as fp:
-
-                pickle.dump(self.terms, fp)
-
-            print "\nStored terms into " + str(filename_terms) + ".pkl\n"
-
-            with open(path.strip()+filename_docs.strip()+'.pkl','wb') as fp:
-
-                pickle.dump(self.docs, fp)
-
-            print "\nStored documents into " + str(filename_docs) + ".pkl\n"
-
-    def _create_inv_index(self):
-
-        self.inv_index={}
-
-        for name,terms in self.termsdict.items():
-
-            for term in terms.terms:
-
-                #print "Updating postingslist for term "+str(term)
-
-                if term in self.inv_index:
-
-                    self.inv_index[term]._update_postingslist(name)
-                    self.inv_index[term]._gettf(name,self.docs)
-                    self.inv_index[term]._getposition(name,self.docs)
-                    #print (term,self.inv_index[term])
-
-                else:
-
-                    postingslist = Postingslist(term,self.docs)
-                    postingslist._update_postingslist(name)
-                    postingslist._gettf(name,self.docs)
-                    postingslist._getposition(name,self.docs)
-                    self.inv_index[term]=postingslist
-                    #print (term,self.inv_index[term].postingslist)
-
-
-
-        if self.userargs.store:
-
-            filename='inverted_index'
-            path='../'
-
-            with open(path.strip()+filename.strip()+'.pkl','wb') as fp:
-
-                pickle.dump(self.inv_index, fp)
-
-            print "\nStored inverted index into " + str(filename) + ".pkl\n"
-
-
-    # create terms on hard disk
-
-    #FolderCreater([''])
-
 ###############################################
 ################# Functions ###################
 ###############################################
@@ -727,10 +776,10 @@ def get_user_args(args):
     ap.add_argument('-c', '--corpus', metavar='PATH', type=str, default='./amazon_reviews',
                     help='specify a path for corpus files. Default is ./amazon_reviews')
     ap.add_argument('-rand', '--random', metavar='N',
-                    help='specify number of randomized documents used for the inverted index. If all documents should be considered, type -r all')
+                    help='specify number of randomized documents used for the inverted index.')
     ap.add_argument('-rank', '--ranking', metavar='N',
                     help='specify upper bound for documents to be ranked')
-    ap.add_argument('-e', '--eval', metavar='SYSTEM', choices=['bool','tfidf','prox'],
+    ap.add_argument('-e', '--eval', metavar='SYSTEM', choices=['bool','tfidf','prox'], default='tfidf',
                     help='specifiy on which system you want to perform the evaluation. Possible values are bool, tfidf and prox.')
     ap.add_argument('-s', '--store', action='store_true',
                     help='activate this flag if you want to store the inverted index into a pickle file')
@@ -748,30 +797,14 @@ def get_user_args(args):
 
 def main(main_args):
 
+    # Get the user arguments.
     args = get_user_args(main_args[1:])
 
-    ii1 = InvertedIndex(args)
-    """
-    for element in sorted(ii1.docs):
+    # Initialize the system.
+    system = System(args)
 
-        print element,': ', ii1.docs[element],'\n'
 
-    for element in sorted(ii1.termsdict):
+if __name__ == '__main__':
 
-        print element,': ', ii1.termsdict[element], '\n'
-
-    """
-
-    #for element in sorted(ii1.inv_index):
-
-    #    print ii1.inv_index[element],'\n'
-
-    """
-    print ii1.terms
-    allterms=[term for midlist in ii1.terms for term in midlist]
-    print allterms
-    """
-
-if __name__=='__main__':
-
+    # Execute the main file.
     main(sys.argv)
