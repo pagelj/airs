@@ -10,11 +10,14 @@ class Ranking(object):
         self.query=query
         self.corpussize=corpussize
         self.inv_index=inv_index
-        self.ranking=self.cosinesimilarity(self.query,self.inv_index,self.userargs)
+        if self.userargs.eval == 'tfidf':
+            self.ranking=self.cosinesimilarity(self.query,self.inv_index)
+        elif self.userargs.eval == 'prox':
+            self.ranking=self.proximityranking()
         self.ranking.to_csv('../ranking.csv')
 
 
-    def cosinesimilarity(self,query,inv_index,userargs):
+    def cosinesimilarity(self,query,inv_index):
 
         # Fill two dictionaries scores and magnitude.
         # Each dictionary contains information to Numerator
@@ -23,10 +26,6 @@ class Ranking(object):
         # are all documents out of the postingslists of query terms.
         scores={}
         magnitude={}
-
-        if userargs.eval == 'prox':
-
-            dist = self.proximityranking(query,inv_index)
 
         # For every term in the query
         for term in query.terms:
@@ -56,17 +55,6 @@ class Ranking(object):
 
                 continue
 
-        if userargs.eval == 'prox':
-
-            for doc in scores:
-
-                if doc in dist:
-
-                    scores[doc] = scores[doc] + math.exp(-dist[doc]+4)
-
-                else:
-
-                    scores[doc] = scores[doc]
 
         # Saves the scores for the documents in a data frame.
         scoresrep=pd.DataFrame(scores.values(),index=scores.keys(),columns=['Numerator'])
@@ -102,71 +90,9 @@ class Ranking(object):
 
         return sortedcosine
 
-    def proximityranking(self,query,inv_index):
+    def proximityranking(self):
 
-        dist = {}
-        dist_tmp = {}
-        dist_termpairs = {}
-
-        # For every possible combination of terms
-        # in a query:
-        for term_id1 in range(len(query.terms)):
-
-            term1 = query.terms[term_id1]
-
-            for term_id2 in range(term_id1+1,len(query.terms)):
-
-                doc_dist = {}
-
-                term2 = query.terms[term_id2]
-
-                # If the terms are distinct:
-                if term1 != term2:
-
-                    if term1 in inv_index and term2 in inv_index:
-
-                        postlist1 = inv_index[term1]
-                        postlist2 = inv_index[term2]
-
-                        for doc in postlist1.position:
-
-                            if doc in postlist2.position:
-
-                                for pos1 in postlist1.position[doc]:
-
-                                    for pos2 in postlist2.position[doc]:
-
-                                        if doc in doc_dist:
-
-                                            doc_dist[doc].append(math.fabs(pos1-pos2))
-                                            doc_dist[doc]=[min(doc_dist[doc])]
-
-                                        else:
-
-                                            doc_dist[doc] = [math.fabs(pos1-pos2)]
-
-                            dist_termpairs[(term1,term2)] = doc_dist
-
-        for termpair in dist_termpairs:
-
-            for doc in dist_termpairs[termpair]:
-
-                if doc in dist:
-
-                    dist[doc].append(dist_termpairs[termpair][doc])
-                    dist[doc]=[min(dist[doc])]
-
-                else:
-
-                    dist[doc] = [dist_termpairs[termpair][doc]]
-
-        for doc in dist:
-
-            dist[doc] = dist[doc][0][0]
-
-        return dist
-
-
+        pass
 
 
     def tfidf_query(self,term,postlist,query):
