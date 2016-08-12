@@ -1,2 +1,0 @@
-Rixio VHS to DVD
-The product has some problems but works.  If you have a pause in you VHS this program will finalize your DVD to soon.  I have wasted several DVD's due to a pause in the old family shot VHS tapes I am copying.  The program should let you decide when to finalize or at least give more time than it does.  The wire conection get's hot when transferring from VHS to DVD.

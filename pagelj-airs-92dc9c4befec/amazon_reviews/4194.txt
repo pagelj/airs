@@ -1,2 +1,0 @@
-No way
-Software is pretty buggy - was shipped with 11.37.2.49.  We used chrome to monitor, video froze after one day. Hardware looked promising and feature rich. However software, especially wireless connectivity was very buggy (chrome monitoring froze, moving camera caused device to reboot). Returning it after 2 days of troubleshooting. We happened to be a hands on networking specialist.  This is not worth your time.  Need to hire a new PM and a few good QA engineers FosCam!

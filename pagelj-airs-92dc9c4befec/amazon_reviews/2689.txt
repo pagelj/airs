@@ -1,2 +1,0 @@
-Does work with wall socket, but not with iHome or Bose adapter
-It worked perfect with the wall charger. I used it with my old wall charger and 30 pin cable supplied with my iPhone 3 GS. However, when I mounted it on my iHome radio system and Bose Wave Radio system (through its iPhone adapter), it did not work.

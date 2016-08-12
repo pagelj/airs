@@ -1,1 +1,0 @@
-Nice toaster that allows you to toast bread that doesn't fit the "Wonder Bread" mold.  Toasts fairly quickly and beeps when the toast is ready.  Have to spend a bit of time learning how certain types of bread toast - lower moisture, lower setting.

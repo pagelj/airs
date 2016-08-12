@@ -1,2 +1,0 @@
-Raspberry Pi Approved
-I used for a RaspberryPi configuration, which required a high class to operate. Works like a charm. I would recommend it.

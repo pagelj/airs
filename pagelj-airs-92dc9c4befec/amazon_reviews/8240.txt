@@ -1,2 +1,0 @@
-Shuffle problem
-Unfortunately the player stops playing the disc's before completing the set of five when you program it to shuffle "All Disc's".

@@ -1,2 +1,0 @@
-Adapter
-It works fine, but it definitely did take a while to ship. I use this to record voicemail from my phone onto my computer.

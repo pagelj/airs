@@ -1,2 +1,0 @@
-Great Drive
-I have not had any issues with this drive.  I purchased two. I transferred over 1.5TB in a day with no issues.  I do use the WD Smartware software to do diagnostics.  I think this will help the drive.  I believe it is there for a reason.  The only strange thing is when I chose to defrag from Windows 7, the drive does not show up.  I am assuming WD wants you to use its software.  The complete diagnostic can take from a day to 12 hours depending drive.  I hae gotten some fast transfer speeds but that was with USB 2.0.

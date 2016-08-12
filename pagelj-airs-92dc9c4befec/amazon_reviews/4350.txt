@@ -1,2 +1,0 @@
-Charges my cell phone while biking
-I got this to maintain the charge on my cell phone while riding my bike.  My android cell phone drains a lot faster when the screen is always on and when GPS is being used.  This backup battery kept my cell phone fully charged.

@@ -1,2 +1,0 @@
-It's a great drive
-I love the look and feel of it and it apparently won't ever require much extra power to run, which all my previous ones have had issues with.  It stores my 2 tb of data like a champ running off of just usb power.  Basically an end all for my data storing needs.  I made one mistake though, I formatted it to be read only on a mac and then went and got another Windows device, now I can't access it directly with my new device...  -_- 2tb of data is a lot to deal with so it'll be a while before I get around to changing the file system

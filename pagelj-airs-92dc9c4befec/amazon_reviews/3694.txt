@@ -1,2 +1,0 @@
-Can't stop the app
-I have spoken with and written MJ about this app. It really works pretty well, but has no provision for turning off when you don't want it operative. Their suggestion is to manually force a close through the settings menu. A very poor alternative. If you set it to not autoload, at least you can avoid the too complicated shutdown if you are not using the app, which with large minutes plans is more the norm than the exception.

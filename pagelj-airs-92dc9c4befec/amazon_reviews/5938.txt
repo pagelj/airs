@@ -1,2 +1,0 @@
-Works only for two months
-1. Amazon misleads on SD card. It requires micro SD.2. Motion detection doesn't work. Cam screen froze up with blue picture with motion detection turned on.3. Loop recording stop working once the SD card is full. It was supposed to overwrite previous recording if SD is full.4. Night vision recording is terrible. Image quality is all blur.

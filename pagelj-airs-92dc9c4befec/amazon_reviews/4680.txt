@@ -1,2 +1,0 @@
-Whines when playing Blu-Ray
-This is a nice player with good features.  Unfortunately, it emits a high-pitched whine when playing Blu-Ray discs.  The whine seems to vary with disc content, which is probably related to the disc spinning up and then slowing down.

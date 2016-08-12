@@ -1,2 +1,0 @@
-foscam camera support
-Issue: I need to set up the camera.  The camera model number is FI8918w. The technician help me make the camera wireless and did the port forwarding. Now am able to view the camera from my I phone also. The camera is working perfectly. Sandra service was professional and completely satisfying

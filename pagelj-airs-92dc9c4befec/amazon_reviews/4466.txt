@@ -1,2 +1,0 @@
-Compact DVD player
-This is a simple DVD player and it doe's not take up a lot of space. And it is simple to set it up.
