@@ -693,7 +693,7 @@ class System(object):
 
 
 
-        total_eleven_prec_recall, = plt.plot(rec_tmp,prec_tmp,'rs', label="11-point precision-recall")
+        total_eleven_prec_recall, = plt.plot(rec_tmp,prec_tmp,'r-s', label="11-point precision-recall")
         plt.legend(handles=[total_prec_recall,total_eleven_prec_recall])
 
         try:
