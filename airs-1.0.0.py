@@ -420,7 +420,7 @@ class System(object):
             specificity=[]
             recall = []
 
-            ranking=Ranking(query,self.inv_index,self.corpussize,self.userargs)
+            ranking=Ranking(query,self.inv_index,self.corpussize,self.userargs,self.doc_obj)
             print "\nRanking\n"
             print ranking.ranking
             print '\n'
