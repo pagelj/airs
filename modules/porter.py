@@ -177,9 +177,11 @@ def stem(w):
     return w
 
 if __name__ == '__main__':
-    print "my"
-    print stem("my")
-    print "mine"
-    print stem("mine")
-    print "was"
-    print stem("was")
+    print stem("I")
+    print stem("want")
+    print stem("an")
+    print stem("awesome")
+    print stem("camera")
+    print stem("with")
+    print stem("good")
+    print stem("quality")

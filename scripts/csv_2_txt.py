@@ -15,7 +15,7 @@ Summer Term 16
 
 import sys
 
-def convert_csv_2_txt(path):
+def convert_csv_2_txt(path, filename):
 
     output_dict = {}
     output = []
@@ -38,7 +38,7 @@ def convert_csv_2_txt(path):
         line_split = line.split(',')
         doc = line_split[0]
         annotation = line_split[1:]
-        
+
         if 'NA' in annotation:
 
             break
@@ -65,7 +65,7 @@ def convert_csv_2_txt(path):
 
         output.append('')
 
-    with open('golddata.txt','w') as outf:
+    with open(str(filename),'w') as outf:
 
         outf.write('\n'.join(output))
 
@@ -76,9 +76,14 @@ def main(main_args):
 
     args = sys.argv
 
-    path = args[1]
+    if len(args) != 3:
 
-    convert_csv_2_txt(path)
+        sys.exit("Use the script as follows: python csv_2_txt.py path/*.csv filename")
+
+    path = args[1]
+    filename = args[2]
+
+    convert_csv_2_txt(path, filename)
 
 
 if __name__=='__main__':

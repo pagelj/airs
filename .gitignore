@@ -48,3 +48,4 @@ nano.save
 ### csv
 *.csv
 */*.csv
+!scripts/*.csv
