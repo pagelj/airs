@@ -2,9 +2,9 @@
 
 ## Contributors
 
--  Prajit Dhar
+-  [Prajit Dhar](https://bitbucket.org/prajitdhar/)
 
--  Janis Pagel
+-  [Janis Pagel](https://bitbucket.org/pagelj)
 
 ## Goal
 
